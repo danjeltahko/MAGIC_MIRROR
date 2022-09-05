@@ -7,8 +7,8 @@ class Weather:
     def __init__(self) -> None:
         self.api_key = WEATHER_KEY
         
-        self.lat = None
-        self.lon = None 
+        self.lat = 50
+        self.lon = 17
 
     
     def get_geocoding(self, city):
@@ -22,14 +22,15 @@ class Weather:
         print(data)
 
 
-    def get_current_weather():
+    def get_current_weather(self):
 
         # https://openweathermap.org/current
-        URL = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid{API_key}"
+        URL = f"https://api.openweathermap.org/data/2.5/weather?lat={self.lat}&lon={self.lon}&appid{self.api_key}"
 
         response = requests.get(URL)
+        data = json.loads(response.text)
 
-        print(response)
+        print(data)
 
 
     def get_forecast(self):
