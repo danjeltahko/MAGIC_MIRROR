@@ -1,5 +1,6 @@
 from .destination import Destination
 from .origin import Origin
+from .train import Train
 
 class Travel():
 

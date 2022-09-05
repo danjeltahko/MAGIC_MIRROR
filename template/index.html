@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MAGIC MIRROR</title>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style/stylesheet.css')}}">
+    </head>
+    <body>
+        <div id="top">
+            <div class="topleft"></div>
+            <div class="toppcenter"></div>
+
+            <div class="topright" id="SL">
+                <p>{{trains[0].name}} -> {{trains[0].destination_name}}</p>
+                {% for train in trains %}
+                <p>{{train.departure_planned}} -> {{train.arrivaltime_planned}}</p>
+                {% endfor %}
+            </div>
+            
+        </div>
+        <div class="center">
+            <div class="centerleft"></div>
+            <div class="centercenter"></div>
+            <div class="centerright"></div>
+        </div>
+        <div class="bottom">
+            <div class="bottomleft"></div>
+            <div class="bottomcenter"></div>
+            <div class="bottomright"></div>
+        </div>
+    </body>
+</html>

@@ -33,7 +33,7 @@ class SL_URL():
         self.URL += f"transportTypes=111&desiredResults={self.desiredResults}&"
         self.URL += f"origName={o_name}&destName={d_name}&"
 
-    def train(self, origName, destName, desiredResults=20):
+    def train(self, origName, destName, desiredResults=6):
         self.origPlaceId = API_ID_DICT[origName]
         self.destPlaceId = API_ID_DICT[destName]
         self.desiredResults = desiredResults

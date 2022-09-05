@@ -1,13 +1,13 @@
 import requests
 import json
 
-from OBJECTS.destination import Destination
-from OBJECTS.origin import Origin
-from OBJECTS.transport import Transport
-from OBJECTS.intermediateStops import IntermediateStops
-from OBJECTS.priceInfo import PriceInfo
-from OBJECTS.legs import Legs
-from OBJECTS.travel import Travel
+from API.SL_TRAFFIC.OBJECTS.destination import Destination
+from API.SL_TRAFFIC.OBJECTS.origin import Origin
+from API.SL_TRAFFIC.OBJECTS.transport import Transport
+from API.SL_TRAFFIC.OBJECTS.intermediateStops import IntermediateStops
+from API.SL_TRAFFIC.OBJECTS.priceInfo import PriceInfo
+from API.SL_TRAFFIC.OBJECTS.legs import Legs
+from API.SL_TRAFFIC.OBJECTS.travel import Travel
 
 """
 SL_JSONL = Creates objects of travels

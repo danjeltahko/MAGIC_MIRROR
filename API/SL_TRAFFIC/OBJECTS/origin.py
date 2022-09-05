@@ -1,13 +1,9 @@
-from .origin import Origin
-from .destination import Destination
-from .transport import Transport
+class Origin():
 
-class Legs():
-
-    def __init__(self, origin : Origin, destination : Destination, intermediateStops, transport : Transport, durationSeconds, hidden):
-        self.origin = origin
-        self.destination = destination
-        self.intermediateStops = intermediateStops
-        self.transport = transport
-        self.durationSeconds = durationSeconds
-        self.hidden = hidden
+    def __init__(self, name, departure_planned, departure_realTime, track, latitude, longitude) -> None:
+        self.name = name
+        self.departure_planned = departure_planned
+        self.departure_realTime = departure_realTime
+        self.track = track
+        self.latitude = latitude
+        self.longitude = longitude
