@@ -7,30 +7,35 @@ class Weather:
     def __init__(self) -> None:
         self.api_key = WEATHER_KEY
         
-        self.lat = 50
-        self.lon = 17
+        self.lat = None
+        self.lon = None
 
     
     def get_geocoding(self, city):
         
         # https://openweathermap.org/api/geocoding-api
-        URL = f"https://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid{self.api_key}"
+        URL = f"https://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={self.api_key}"
 
         response = requests.get(URL)
         data = json.loads(response.text)
-
         print(data)
+        print("\n")
+        self.lat = data[0]['lat']
+        self.lon = data[0]['lon']
 
 
     def get_current_weather(self):
 
         # https://openweathermap.org/current
-        URL = f"https://api.openweathermap.org/data/2.5/weather?lat={self.lat}&lon={self.lon}&appid{self.api_key}"
+        URL = f"https://api.openweathermap.org/data/2.5/weather?lat={self.lat}&lon={self.lon}&units=metric&appid={self.api_key}"
+
 
         response = requests.get(URL)
         data = json.loads(response.text)
-
         print(data)
+        print("\n")
+
+      
 
 
     def get_forecast(self):

@@ -6,7 +6,10 @@ from moa import MOA
 
 
 
+
+
 fos = Weather()
 fos.get_geocoding("Vällingby")
 fos.get_current_weather()
+
 
