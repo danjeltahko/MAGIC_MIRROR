@@ -12,7 +12,8 @@ def index():
 @app.route('/m-m')
 def magic_mirror():
     trains = MOA.get_trains()
-    return render_template('index.html', trains=trains)
+    forecast = MOA.get_forecast()
+    return render_template('magic_mirror.html', trains=trains, forecast=forecast)
 
 @app.route('/hue-lights')
 def adjust_lights():

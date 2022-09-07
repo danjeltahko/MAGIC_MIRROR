@@ -1,4 +1,12 @@
 
+
+Uppgift NAckademin 
+
+Läs på om FLSM och VLSM
+/ hur man designar ett LAN
+
+
+
 pip req
 	* requests
 	* flask
@@ -15,3 +23,18 @@ Mirror =/
 
 
 !!! Lägg till flik som man kan gå in på mobilen och styra spegeln!!!
+
+
+
+Traceback (most recent call last):
+  File "/Users/tacobaco/myprojects/MAGIC_MIRROR/main.py", line 28, in <module>
+    MOA = MOA()
+  File "/Users/tacobaco/myprojects/MAGIC_MIRROR/moa.py", line 12, in __init__
+    self.SL = SL()
+  File "/Users/tacobaco/myprojects/MAGIC_MIRROR/API/SL_TRAFFIC/sl.py", line 11, in __init__
+    self.create_transport()
+  File "/Users/tacobaco/myprojects/MAGIC_MIRROR/API/SL_TRAFFIC/sl.py", line 20, in create_transport
+    travels = train.createObjects()
+  File "/Users/tacobaco/myprojects/MAGIC_MIRROR/API/SL_TRAFFIC/MODELS/sl_objects.py", line 42, in createObjects
+    origin_track = jsonObject["travels"][i]["origin"]["track"]
+KeyError: 'track'

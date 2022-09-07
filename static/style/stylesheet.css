@@ -6,7 +6,11 @@ p {
     color: black;
 }
 
-.right {
+#left {
+    float: left
+}
+
+#right {
     float: right
 }
 

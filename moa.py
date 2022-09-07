@@ -1,19 +1,31 @@
 from API.SL_TRAFFIC.sl import SL
 from API.WEATHER.weather import Weather
 from API.HUE.hue import Hue
+from API.WEATHER.weather_api import Weather_API
 
 
 class MOA:
 
     def __init__(self) -> None:
 
-        # API init
+        # API object init
         self.SL = SL()
         self.weather = Weather()
-        self.hue = Hue()
+        #self.hue = Hue()
 
-        self.set_trains("Vällingby", "Sankt Eriksplan")
-        self.hue.print_all_lights()
+        #self.hue.print_all_lights()
+
+    """     Weather     """
+    def set_location(self, location):
+        self.weather.get_geocoding(location)
+
+    def get_forecast(self):
+        self.weather.forecast = self.weather.set_forecast()
+        return self.weather.forecast
+
+    def get_weather(self):
+        self.weather.current_temp = self.weather.set_current_weather()
+        return self.weather.current_temp
         
 
     """     SL      """

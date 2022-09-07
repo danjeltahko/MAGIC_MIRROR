@@ -5,8 +5,10 @@ class SL:
 
     def __init__(self) -> None:
         self.trains = []
-        self.travel_from = None 
-        self.travel_to = None
+        self.travel_from = "Vällingby"
+        self.travel_to = "Sankt Eriksplan"
+
+        self.create_transport()
 
     def set_transport(self, travel_from, travel_to):
         self.travel_from = travel_from 

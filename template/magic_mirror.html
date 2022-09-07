@@ -6,10 +6,19 @@
     </head>
     <body>
         <div id="top">
-            <div class="topleft"></div>
+
+            <div class="topleft" id="left">
+                <p>testing </p>
+                {% for weather in forecast %}
+                <img src={{weather.iconurl}} />
+                <h4>{{weather.temp}} Celsius</h4>
+                <p>Feels like : {{weather.feels_like}}</p>
+                {% endfor %}
+            </div>
+
             <div class="toppcenter"></div>
 
-            <div class="topright" id="SL">
+            <div class="topright" id="right">
                 <p>{{trains[0].name}} -> {{trains[0].destination_name}}</p>
                 {% for train in trains %}
                 <p>{{train.departure_planned}} -> {{train.arrivaltime_planned}}</p>
