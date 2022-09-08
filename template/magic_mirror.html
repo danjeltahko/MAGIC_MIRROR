@@ -8,11 +8,13 @@
         <div id="top">
 
             <div class="topleft" id="left">
-                <p>testing </p>
+                <h1>{{forecast[0].name}}</h1>
                 {% for weather in forecast %}
                 <img src={{weather.iconurl}} />
+                <p>{{weather.description}}</p>
                 <h4>{{weather.temp}} Celsius</h4>
                 <p>Feels like : {{weather.feels_like}}</p>
+                <p>{{weather.dt}}</p>
                 {% endfor %}
             </div>
 

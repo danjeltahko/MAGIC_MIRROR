@@ -2,6 +2,7 @@ from API.api_keys import WEATHER_KEY
 from API.WEATHER.weather_obj import Weather_OBJ
 import requests 
 import json
+import datetime
 
 class Weather_API:
 
@@ -43,6 +44,7 @@ class Weather_API:
         weather_object.timezone = data['timezone']
         weather_object.sunrise = data['sys']['sunrise']
         weather_object.sunset = data['sys']['sunset']
+        
 
         print(weather_object)
 
@@ -61,9 +63,11 @@ class Weather_API:
         for weather in data['list']:
             weather_object = self.create_object(weather)
             weather_object.timezone = data['city']['timezone']
+            weather_object.dt = datetime.datetime.fromtimestamp(float(weather_object.dt-weather_object.timezone))
             weather_object.sunrise = data['city']['sunrise']
             weather_object.sunset = data['city']['sunset']
             forecast.append(weather_object)
+            
 
         return forecast
             

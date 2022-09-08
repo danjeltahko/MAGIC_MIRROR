@@ -5,8 +5,8 @@ class SL:
 
     def __init__(self) -> None:
         self.trains = []
-        self.travel_from = "Vällingby"
-        self.travel_to = "Sankt Eriksplan"
+        self.travel_from = "Sankt Eriksplan"
+        self.travel_to = "Vällingby"
 
         self.create_transport()
 
@@ -19,6 +19,8 @@ class SL:
         train = SL_URL().train(self.travel_from, self.travel_to)
         travels = train.createObjects()
 
+        train_list = []
+
         # Simplified travel info..
         for travel in travels:
             for i in range(len(travel.legs)):
@@ -28,7 +30,8 @@ class SL:
                 destination_name = travel.legs[i].destination.name
                 arrivaltime_planned = travel.legs[i].destination.arrivalTime_planned.split('T')[1][:-4]
                 foo = Train(name, departure, transport_name, destination_name, arrivaltime_planned)
-                self.trains.append(foo)
+                train_list.append(foo)
+        self.trains = train_list
 
         return self.trains
 

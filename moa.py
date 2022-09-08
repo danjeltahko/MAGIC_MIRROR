@@ -29,7 +29,7 @@ class MOA:
         
 
     """     SL      """
-    def set_trains(self, travel_org, travel_des):
+    def search_trains(self, travel_org, travel_des):
         self.SL.set_transport(travel_org, travel_des)
         self.SL.create_transport()
 

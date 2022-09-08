@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+from crypt import methods
+from urllib import request
+from flask import Flask, render_template, request
 
 from moa import MOA
 
@@ -19,8 +21,14 @@ def magic_mirror():
 def adjust_lights():
     return render_template('lights.html')
 
-@app.route('/traffic')
+@app.route('/traffic', methods=['POST', 'GET'])
 def adjust_traffic():
+
+    if request.method == 'POST':
+        changed_train_from = request.form['From']
+        changed_train_tooo = request.form['To']
+        MOA.search_trains(changed_train_from, changed_train_tooo)
+
     trains = MOA.get_trains()
     return render_template('traffic.html', trains=trains)
 
