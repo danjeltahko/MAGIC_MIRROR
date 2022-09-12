@@ -3,6 +3,7 @@ from API.WEATHER.weather_obj import Weather_OBJ
 import requests 
 import json
 import datetime
+import math
 
 class Weather_API:
 
@@ -42,11 +43,12 @@ class Weather_API:
 
         weather_object = self.create_object(data)
         weather_object.timezone = data['timezone']
-        weather_object.sunrise = data['sys']['sunrise']
-        weather_object.sunset = data['sys']['sunset']
-        
+        weather_object.dt = datetime.datetime.fromtimestamp(float(weather_object.dt-weather_object.timezone))
 
-        print(weather_object)
+        sunrise = data['sys']['sunrise']
+        sunset = data['sys']['sunset']
+        weather_object.sunrise = datetime.datetime.fromtimestamp(float(sunrise-weather_object.timezone))
+        weather_object.sunset = datetime.datetime.fromtimestamp(float(sunset-weather_object.timezone))
 
         return weather_object
 
@@ -86,13 +88,13 @@ class Weather_API:
         # ['weather']
         icon = data['weather'][0]['icon']
         new_object.iconurl = f"http://openweathermap.org/img/w/{icon}.png"
-        new_object.main = data['weather'][0]['main']
-        new_object.description = data['weather'][0]['description']
+        new_object.main = data['weather'][0]['main'].capitalize()
+        new_object.description = data['weather'][0]['description'].capitalize()
         # ['main']
-        new_object.temp = data['main']['temp']
+        new_object.temp = math.ceil(data['main']['temp'])
         new_object.feels_like = data['main']['feels_like']
-        new_object.temp_min = data['main']['temp_min']
-        new_object.temp_max = data['main']['temp_max']
+        new_object.temp_min = math.ceil(data['main']['temp_min'])
+        new_object.temp_max = math.ceil(data['main']['temp_max'])
         new_object.pressure = data['main']['pressure']
         new_object.humidity = data['main']['humidity']
         # ['wind']
@@ -102,5 +104,10 @@ class Weather_API:
         new_object.clouds = data['clouds']['all']
         # TIME
         new_object.dt = data['dt']
-
+        """
+        try:
+            new_object.rain = data['rain']['1h']
+        except:
+            print("No rain")
+        """
         return new_object

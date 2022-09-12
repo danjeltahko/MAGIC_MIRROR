@@ -11,6 +11,23 @@ Läs på om FLSM och VLSM
 / hur man designar ett LAN
 
 
+Att hantera stora projekt 
+
+	Research + Excludering
+
+		Lista alternativen, hårdvara id, mjukvara id osv osv 
+		operativsystem 
+
+
+
+
+
+
+
+
+
+
+
 !!! TODO !!!
 * Add user - search for SL traffic 
 * Create Weather widget 

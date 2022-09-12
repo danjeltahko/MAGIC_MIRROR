@@ -22,6 +22,13 @@ class MOA:
     def get_forecast(self):
         self.weather.forecast = self.weather.set_forecast()
         return self.weather.forecast
+    
+    def get_forecast_today(self):
+        today_weather = []
+        array = self.weather.set_forecast()
+        for i in range(7):
+            today_weather.append(array[i])
+        return today_weather
 
     def get_weather(self):
         self.weather.current_temp = self.weather.set_current_weather()

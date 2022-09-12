@@ -7,6 +7,12 @@ from moa import MOA
 
 app = Flask(__name__, template_folder='template')
 
+@app.route('/testing')
+def weather_test():
+    current_weather = MOA.get_weather()
+    forecast = MOA.get_forecast_today()
+    return render_template('weather.html', current_weather=current_weather, today=forecast)
+
 @app.route('/')
 def index():
     return render_template('user_menu.html')
