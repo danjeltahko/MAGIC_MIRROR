@@ -1,3 +1,4 @@
+from urllib import response
 from bs4 import BeautifulSoup
 from config import *
 import time

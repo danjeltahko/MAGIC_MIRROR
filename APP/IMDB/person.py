@@ -1,4 +1,5 @@
 from math import prod
+from readline import write_history_file
 from bs4 import BeautifulSoup
 from config import *
 from movie import *
@@ -39,6 +40,8 @@ class IMDB:
             new_dict = getBasicMovie(url_link)
             self.producer_list.append(new_dict)
 
+     
+
     def calculate(self):
         
         full_list = []
@@ -46,6 +49,30 @@ class IMDB:
         for ob in self.director_list:
             new_dict = {}
             new_dict['title'] = ob['title']
+            new_dict['rating'] = ob['rating']
+            new_dict['director'] = True
+            for a in self.writer_list:
+                if a['title'] == ob['title']:
+                    a.pop('title')
+                    new_dict['writer'] = True
+
+            for b in self.producer_list:
+                if b['title'] == ob['title']:
+                    b.pop('title')
+                    new_dict['producer'] = True
+
+            full_list.append(new_dict)
+
+        
+        for i in full_list:
+            print(i)
+
+        
+
+
+        """
+        tile | rating | dir | wri | pro |
+        """
     
 
 if __name__ == "__main__":

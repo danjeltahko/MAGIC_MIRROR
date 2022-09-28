@@ -1,57 +1,14 @@
-<b><a href="/title/tt0251504/">Dark Knight</a></b>
-<b><a href="/title/tt0177898/">The Last Seduction II</a></b>
-<b><a href="/title/tt0115289/">The New Adventures of Robin Hood</a></b>
-<b><a href="/title/tt1842457/">Respect</a></b>
-<b><a href="/title/tt0101114/">Tillbaka till Aidensfield</a></b>
-<b><a href="/title/tt0101225/">Trainer</a></b>
-<b><a href="/title/tt0081831/">Bergerac</a></b>
-<b><a href="/title/tt0101426/">Bejewelled</a></b>
-<b><a href="/title/tt0369317/">The Castle of Adventure</a></b>
-<b><a href="/title/tt0096644/">Making News</a></b>
-<b><a href="/title/tt0084987/">The Bill</a></b>
-<b><a href="/title/tt0292129/">Mr. Majeika</a></b>
-<b><a href="/title/tt0093296/">Jane and the Lost City</a></b>
-<b><a href="/title/tt0149427/">C.A.T.S. Eyes</a></b>
-<b><a href="/title/tt0898299/">The Ferret</a></b>
-<b><a href="/title/tt0086141/">Prisoners of the Lost Universe</a></b>
-<b><a href="/title/tt0080846/">Svärdet</a></b>
-<b><a href="/title/tt0080014/">There Goes the Bride</a></b>
-<b><a href="/title/tt0126730/">Why Not Stay for Breakfast?</a></b>
+[
+    <div id="jumpto">
+        Jump to:
+        <a data-category="director" href="#director" onclick="handleFilmoJumpto(this);">Director</a>
 
-<b><a href="/title/tt0251504/">Dark Knight</a></b>
-<b><a href="/title/tt0093296/">Jane and the Lost City</a></b>
-<b><a href="/title/tt0086141/">Prisoners of the Lost Universe</a></b>
-<b><a href="/title/tt0080846/">Svärdet</a></b>
-<b><a href="/title/tt0080014/">There Goes the Bride</a></b>
-<b><a href="/title/tt0126730/">Why Not Stay for Breakfast?</a></b>
-<b><a href="/title/tt0074409/">Trial by Combat</a></b>
-
-<b><a href="/title/tt0251504/">Dark Knight</a></b>
-<b><a href="/title/tt0111952/">Enid Blytons äventyrsserie</a></b>
-<b><a href="/title/tt0093296/">Jane and the Lost City</a></b>
-<b><a href="/title/tt0086872/">Prey</a></b>
-<b><a href="/title/tt0091963/">Sky Bandits</a></b>
-<b><a href="/title/tt0085384/">Rosa Panterns förbannelse</a></b>
-<b><a href="/title/tt0084814/">Jakten på Rosa Pantern</a></b>
-<b><a href="/title/tt0084884/">The Wall</a></b>
-<b><a href="/title/tt0078163/">Rosa Panterns hämnd</a></b>
-<b><a href="/title/tt0075944/">En livsfarlig man</a></b>
-<b><a href="/title/tt0075968/">Duellanterna</a></b>
-<b><a href="/title/tt0075066/">Rosa Pantern slår igen</a></b>
-<b><a href="/title/tt0074678/">The Incredible Sarah</a></b>
-<b><a href="/title/tt0074646/">Hot Potato</a></b>
-<b><a href="/title/tt0068956/">Miss Julie</a></b>
-<b><a href="/title/tt0067800/">Straw Dogs</a></b>
-<b><a href="/title/tt0067727/">See No Evil</a></b>
-<b><a href="/title/tt0066730/">Stryparen på Rillington Place</a></b>
-<b><a href="/title/tt0064004/">All the Right Noises</a></b>
-<b><a href="/title/tt0064045/">Rysk roulett, Madame</a></b>
-<b><a href="/title/tt0063390/">Bara när jag skrattar</a></b>
-<b><a href="/title/tt0060588/">Khartoum</a></b>
-<b><a href="/title/tt0058969/">The Big Job</a></b>
-<b><a href="/title/tt0057918/">Nu tar vi Cleopatra</a></b>
-<b><a href="/title/tt0058166/">Kanonerna vid Batasi</a></b>
-<b><a href="/title/tt0057579/">Thomasinas äventyr</a></b>
-<b><a href="/title/tt0068099/">Madigan</a></b>
-<b><a href="/title/tt21375032/">Interview with Terry Marcel</a></b>
-<b><a href="/title/tt0367305/">Clapper Board</a></b>
+        <a data-category="writer" href="#writer" onclick="handleFilmoJumpto(this);">Writer</a>
+        
+        <a data-category="producer" href="#producer" onclick="handleFilmoJumpto(this);">Producer</a>
+        
+        <a data-category="assistant_director" href="#assistant_director" onclick="handleFilmoJumpto(this);">Second Unit Director or Assistant Director</a>
+        <a data-category="production_manager" href="#production_manager" onclick="handleFilmoJumpto(this);">Production manager</a>
+        <a data-category="self" href="#self" onclick="handleFilmoJumpto(this);">Self</a>
+    </div>
+]
