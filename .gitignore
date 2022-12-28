@@ -3,6 +3,7 @@ __pycache__
 .vscode/
 
 api_keys.py
-hue_json.json
-weather_json.json
-f
+SL.json
+notes.txt
+
+*.json

@@ -2,6 +2,7 @@ from API.SL_TRAFFIC.sl import SL
 from API.WEATHER.weather import Weather
 from API.HUE.hue import Hue
 from API.WEATHER.weather_api import Weather_API
+from API.AFTONBLADET.aftonbladet import Aftonbladet
 
 
 class MOA:
@@ -9,11 +10,15 @@ class MOA:
     def __init__(self) -> None:
 
         # API object init
-        self.SL = SL()
+        #self.SL = SL()
         self.weather = Weather()
+        self.news = Aftonbladet()
         #self.hue = Hue()
 
         #self.hue.print_all_lights()
+
+    def get_news(self):
+        return self.news.testing()
 
     """     Weather     """
     def set_location(self, location):
@@ -45,3 +50,7 @@ class MOA:
 
     def get_trains(self):
         return self.SL.trains
+
+if __name__ == "__main__":
+    moa = MOA()
+    print(moa.get_news())

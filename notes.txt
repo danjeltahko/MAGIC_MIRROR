@@ -20,14 +20,6 @@ Att hantera stora projekt
 
 
 
-
-
-
-
-
-
-
-
 !!! TODO !!!
 * Add user - search for SL traffic 
 * Create Weather widget 
