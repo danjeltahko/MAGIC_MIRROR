@@ -1,4 +1,4 @@
-from API.SL_TRAFFIC.sl import SL
+from API.SL_TRAFFIC.OLD.sl import SL
 from API.WEATHER.weather import Weather
 from API.HUE.hue import Hue
 from API.WEATHER.weather_api import Weather_API
