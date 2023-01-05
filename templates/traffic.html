@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>SL Traffic</title>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style/stylesheet.css')}}">
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>SL Trafik</title>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar__brand">
+            <a href="/user/"><img class="navbar__logo" src="/static/img/icon.png" alt="tahko-icon"></a>MoA
+        </div>
+        <div class="navigation__button">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+    <div class="header__breaker"></div>
+    <main>
         <form action="/traffic" method="post">
             <label for="From">From :</label>
             <input type="text" id="From" name="From">
@@ -21,6 +36,6 @@
             <p>{{train.departure_planned}} -> {{train.arrivaltime_planned}}</p>
             {% endfor %}
         </div>
-
-    </body>
+    </main>
+</body>
 </html>

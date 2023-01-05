@@ -1,22 +1,31 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>MENU</title>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style/stylesheet.css')}}">
-    </head>
-    <body>
-        <div class="grid-container">
-
-            <a href="hue-lights"><div class="grid-item ">Lights</div></a>
-            <a href="traffic" ><div class="grid-item ">Traffic</div></a>
-            <div class="grid-item ">3</div>
-            <div class="grid-item ">4</div>
-            <div class="grid-item ">5</div>
-            <div class="grid-item ">6</div>
-            <div class="grid-item ">7</div>
-            <div class="grid-item ">8</div>
-            <div class="grid-item ">9</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>User Menu</title>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar__brand">
+            <a href="/user/"><img class="navbar__logo" src="/static/img/icon.png" alt="tahko-icon"></a>MoA
         </div>
-    </body>
+        <div class="navigation__button">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+    <div class="header__breaker"></div>
+    <main>
+        <div class="main">
+            <a class="main__link" href="/traffic/">SL Trafik</a>
+            <a class="main__link" href="#" >Inköpslista</a>
+            <a class="main__link" href="/" >Magic Mirror (DEMO)</a>
+        </div>
+    </main>
+    <footer></footer>
+</body>
 </html>
-

@@ -24,6 +24,10 @@ thread_stop_event = Event()
 def index():
     return render_template("main.html", clock=MoA)
 
+@app.route("/user/")
+def user_navigation():
+    return render_template('user_menu.html')
+
 @app.route('/testing')
 def weather_test():
     current_weather = MOA.get_weather()
@@ -40,15 +44,37 @@ def magic_mirror():
 def adjust_lights():
     return render_template('lights.html')
 
-@app.route('/traffic', methods=['POST', 'GET'])
+@app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
 
-    if request.method == 'POST':
-        changed_train_from = request.form['From']
-        changed_train_tooo = request.form['To']
-        MOA.search_trains(changed_train_from, changed_train_tooo)
+    # if request.method == 'POST':
+    #     changed_train_from = request.form['From']
+    #     changed_train_tooo = request.form['To']
+    #     MOA.search_trains(changed_train_from, changed_train_tooo)
 
-    trains = MOA.get_trains()
+    # trains = MOA.get_trains()
+    print("in traffic")
+    trains = [
+        {'name': "Vällingby",
+        'destination_name': "Sankt Eriksplan",
+        'departure_planned': "20:15",
+        'arrivaltime_planned': "20:40"},
+
+        {'name': "Vällingby",
+        'destination_name': "Sankt Eriksplan",
+        'departure_planned': "20:15",
+        'arrivaltime_planned': "20:40"},
+
+        {'name': "Vällingby",
+        'destination_name': "Sankt Eriksplan",
+        'departure_planned': "20:15",
+        'arrivaltime_planned': "20:40"},
+
+        {'name': "Vällingby",
+        'destination_name': "Sankt Eriksplan",
+        'departure_planned': "20:15",
+        'arrivaltime_planned': "20:40"},
+    ]
     return render_template('traffic.html', trains=trains)
 
 # Event Decoration 
