@@ -1,21 +1,23 @@
-from API.SL_TRAFFIC.OLD.sl import SL
-from API.WEATHER.weather import Weather
-from API.HUE.hue import Hue
-from API.WEATHER.weather_api import Weather_API
-from API.AFTONBLADET.aftonbladet import Aftonbladet
+from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit
 
+__version__ = 1.0
+__author__ = 'https://github.com/DanjelTahko'
 
 class MOA:
+
+    """ Mamma & Assistent """
 
     def __init__(self) -> None:
 
         # API object init
-        #self.SL = SL()
+        self.SL = SL()
         self.weather = Weather()
         self.news = Aftonbladet()
-        #self.hue = Hue()
+        self.hue = Hue()
 
-        #self.hue.print_all_lights()
+        self.name = 'Time'
+        self.time = ''
+        self.connected = 0
 
     def get_news(self):
         return self.news.testing()
