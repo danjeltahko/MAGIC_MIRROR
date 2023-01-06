@@ -8,6 +8,7 @@ import json
 class SL:
 
     def __init__(self) -> None:
+
         self.from_station = None
         self.to_station = None
 
@@ -19,7 +20,7 @@ class SL:
         self.legs = []
         self.total_t = None
 
-    def get_stations(self, station:str) -> list[dict]:
+    def get_every_station(self, station:str) -> list[dict]:
         """ returns list dictionaries with stations similar to search station """
         search_url = f"https://api.sl.se/api2/typeahead.json?key={SL_STATION_KEY}&searchstring={station}"
         response = requests.get(search_url)
@@ -49,7 +50,7 @@ class SL:
         self.legs = []
         self.total_t = None
 
-    def get_travel(self) -> list:
+    def get_trip(self) -> list:
         travel_url = f"https://api.sl.se/api2/TravelplannerV3_1/trip.json?key={SL_TRAVEL_KEY}"
         parameters = {
             "originId" : self.from_station["SiteId"],
@@ -83,6 +84,8 @@ class SL:
                     if (trip == trip_data["LegList"]["Leg"][-1]):
                         self.destin = destin_name
                         self.destin_t = datetime.strptime(trip['Destination']['time'], '%H:%M:%S')
+                        print(type(self.destin_t))
+                        print(type(self.origin_t))
                         self.total_t = self.destin_t - self.origin_t
 
                     # if transport changes necessary for trip, append stops in legs list
@@ -96,9 +99,9 @@ class SL:
 
                 # create travel object of trip and append to travel list
                 new_travel = Travel(self.origin,
-                                    self.origin_t,
+                                    self.origin_t.time(),
                                     self.destin,
-                                    self.destin_t,
+                                    self.destin_t.time(),
                                     self.total_t,
                                     self.legs,)
                 travel_array.append(new_travel)

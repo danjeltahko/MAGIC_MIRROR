@@ -47,34 +47,15 @@ def adjust_lights():
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
 
-    # if request.method == 'POST':
-    #     changed_train_from = request.form['From']
-    #     changed_train_tooo = request.form['To']
-    #     MOA.search_trains(changed_train_from, changed_train_tooo)
+    if request.method == 'POST':
+        changed_train_from = request.form['From']
+        changed_train_tooo = request.form['To']
+        print(changed_train_tooo)
+        MoA.set_travel(changed_train_from, changed_train_tooo)
 
-    # trains = MOA.get_trains()
-    print("in traffic")
-    trains = [
-        {'name': "Vällingby",
-        'destination_name': "Sankt Eriksplan",
-        'departure_planned': "20:15",
-        'arrivaltime_planned': "20:40"},
 
-        {'name': "Vällingby",
-        'destination_name': "Sankt Eriksplan",
-        'departure_planned': "20:15",
-        'arrivaltime_planned': "20:40"},
+    trains = MoA.get_travel()
 
-        {'name': "Vällingby",
-        'destination_name': "Sankt Eriksplan",
-        'departure_planned': "20:15",
-        'arrivaltime_planned': "20:40"},
-
-        {'name': "Vällingby",
-        'destination_name': "Sankt Eriksplan",
-        'departure_planned': "20:15",
-        'arrivaltime_planned': "20:40"},
-    ]
     return render_template('traffic.html', trains=trains)
 
 # Event Decoration 

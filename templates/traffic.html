@@ -28,7 +28,7 @@
     </header>
     <div class="header__breaker"></div>
     <main>
-        <form action="/traffic" method="post">
+        <form action="/traffic/" method="post">
             <label for="From">From :</label>
             <input type="text" id="From" name="From">
 
@@ -38,9 +38,9 @@
             <input type="submit" value="Submit">
         </form>
         <div class="topright" id="right">
-            <p>{{trains[0].name}} -> {{trains[0].destination_name}}</p>
-            {% for train in trains %}
-            <p>{{train.departure_planned}} -> {{train.arrivaltime_planned}}</p>
+            <p>{{ trains[0].origin }} -> {{ trains[0].destin }}</p>
+            {% for trip in trains %}
+                <p>{{ trip.origin_t }} -> {{ trip.destin_t }}</p>
             {% endfor %}
         </div>
     </main>

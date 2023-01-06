@@ -19,16 +19,26 @@ if __name__ == '__main__':
     """ Hue testing"""
 
     """ SL testing"""        
-    #stations = _sl.get_stations("Vällingby")
-    #from_id = _sl.get_station_id(stations=stations, index=0)
-    #_sl.set_from_station(from_id)
 
-    #stations = _sl.get_stations("Karolinska institutet västra")
-    #to_id = _sl.get_station_id(stations=stations, index=0)
-    #_sl.set_to_station(to_id)
+    # returns a dictionary list with all stations similar to search
+    from_stations = _sl.get_every_station("Vällingby")
+    to_stations = _sl.get_every_station("Sundbyberg")
+    print(to_stations)
+    # sets travel station, index 0 will always be the search /most similar
+    _sl.from_station = from_stations[0]
+    _sl.to_station = to_stations[0]
 
-    #array = _sl.get_travel()
-    #_sl.print_trains(array)
+    # from_id = _sl.from_station_id
+    # print(from_id)
+    # _sl.set_from_station(from_id)
+
+    # to_id = _sl.to_station_id
+    # print(to_id)
+    # _sl.set_to_station(to_id)
+
+    # array = _sl.get_travel()
+    # print("\n")
+    # _sl.print_trains(array)
 
 
     """ Trakt testing"""
@@ -39,7 +49,7 @@ if __name__ == '__main__':
     #fos.set_forecast()
 
     """ Fitbit """
-    _fitbit.run()
+    #_fitbit.run()
 
     
 
