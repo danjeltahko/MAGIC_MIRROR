@@ -15,7 +15,7 @@ __author__ = 'https://github.com/DanjelTahko'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 thread = Thread()
@@ -50,19 +50,26 @@ def adjust_lights():
 def adjust_traffic():
 
     if request.method == 'POST':
+
         train_from = request.form['From']
         train_tooo = request.form['To']
+
+        if (len(train_from) == 0):
+            train_from = MoA.last_from_station
+        if (len(train_tooo) == 0):
+            train_tooo = MoA.last_tooo_station
 
         # If new search is same as before: do nothing
         if (train_from == MoA.last_from_station and train_tooo == MoA.last_tooo_station):
             MoA.log_data("App Route /traffic 'POST' request: same stations as before, refresh travel")
+            return render_template('traffic.html', trains=MoA.get_travel())
         # If 'from' is same but 'to' is different: new id search for 'to'
         elif (train_from == MoA.last_from_station and train_tooo != MoA.last_tooo_station):
             MoA.log_data(f"App Route /traffic 'POST' request: new to_station={train_tooo}")
             MoA.set_new_tooo_station(train_tooo)
         # If 'from' is different but 'to' is same: new id search for 'from'
         elif (train_from != MoA.last_from_station and train_tooo == MoA.last_tooo_station):
-            MoA.log_data(f"App Route /traffic 'POST' request: new fromstation={train_from}")
+            MoA.log_data(f"App Route /traffic 'POST' request: new from_station={train_from}")
             MoA.set_new_from_station(train_from)
         # If both searches are different: new id search for both stations
         else:
@@ -128,6 +135,7 @@ def moa_thread():
                 MoA.set_new_travel()
                 MoA.sl_new = False
                 MoA.log_data(f"App Thread SL: new time of nearest train departure={MoA.get_nearest_trip_time().strftime('%H:%M:%S')}")
+                print("Time passed")
             # if somethings wrong??
             else:
                 print("App Thread SL = something is wrong..")

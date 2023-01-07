@@ -28,19 +28,24 @@
     </header>
     <div class="header__breaker"></div>
     <main>
-        <form action="/traffic/" method="post">
-            <label for="From">From :</label>
-            <input type="text" id="From" name="From">
-
-            <label for="To">To :  </label>
-            <input type="text" id="To" name="To"><br><br>
-
-            <input type="submit" value="Submit">
+        <form class="form" action="/traffic/" method="POST">
+            <div class="form__input">
+                <p>
+                    <label class="form__label" for="From">Från :</label>
+                    <input class="form__textinput" type="text" name="From" placeholder="{{ trains[0].origin_name }}">
+                </p>
+                <div class="header__breaker"></div>
+                <p>
+                    <label class="form__label" for="To">Till :</label>
+                    <input class="form__textinput" type="text" name="To" placeholder="{{ trains[0].destin_name }}">
+                </p>
+            </div>
+            <button class="form__submit" type="submit" value="Submit">SÖK</button>
         </form>
         <div class="topright" id="right">
             <p>{{ trains[0].origin_name }} -> {{ trains[0].destin_name }}</p>
             {% for trip in trains %}
-                <p>{{ trip.origin_time }} -> {{ trip.destin_time }}</p>
+                <p>{{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
             {% endfor %}
         </div>
     </main>

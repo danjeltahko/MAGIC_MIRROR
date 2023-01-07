@@ -128,3 +128,46 @@ body {
     text-align: center;
 }
 
+.topright {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form__input {
+    width:350px;
+    background-color: white;
+    padding: 0 20px 0 20px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    border: solid black 2px;
+}
+
+.form__textinput {
+    border: none;
+    font-size: 18px;
+    padding-right: 50px;
+}
+
+.form__submit {
+    background-color: black;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px 30px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+}
+
+.form__submit:hover {
+    background-color: rgb(70, 69, 69);
+}
+
