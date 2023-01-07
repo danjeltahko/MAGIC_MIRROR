@@ -11,8 +11,8 @@ class MOA:
     def __init__(self) -> None:
 
         # Time & Date init
-        self.current_time = self.get_current_time()
-        self.current_day = self.get_current_day()
+        self.current_time = "00:00:00"
+        self.current_day = "Sön 20 Apr"
 
         # SL init
         self.sl = SL()
@@ -22,7 +22,6 @@ class MOA:
         self.sl_new = False
         self.__SL__(self.last_from_station, self.last_tooo_station)
 
-
         self.weather = Weather()
         self.news = Aftonbladet()
         self.hue = Hue()
@@ -31,6 +30,10 @@ class MOA:
 
 
     """ ### Time & Date ### """
+    def __DATETIME__(self):
+        self.current_time = self.get_current_time().strftime("%H:%M:%S")
+        self.current_day = self.get_current_day()
+
     def get_current_time(self) -> datetime:
         """ Returns current time datetime.time: 22:50:30"""
         return datetime.strptime(datetime.now().strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
@@ -47,11 +50,11 @@ class MOA:
 
     """ ### SL Traffic ### """
     def __SL__(self, travel_from:str, travel_tooo:str) -> None:
+        self.log_data(f"MOA __init__ : __SL__")
         self.set_new_from_station(travel_from)
         self.set_new_tooo_station(travel_tooo)
         self.set_new_travel()
-        self.log_data(f"MOA __init__ : __SL__")
-
+        
     def set_new_from_station(self, travel_from:str) -> None:
         """ Gets and sets data of travel_from station """
         # sets 'MOA last_from_station' search to travel_from.
@@ -85,7 +88,6 @@ class MOA:
             self.log_data("MOA SL: Successfully created new Travel with new train departures")
         else:
             self.log_data("MOA SL: Failed to created new Travel with new trains and departures. (See ERROR for more info)")
-
 
     def get_nearest_trip_time(self) -> datetime:
         """ Returns first departure from train/trip in list: 22:50:30 """
@@ -122,8 +124,9 @@ class MOA:
         self.weather.current_temp = self.weather.set_current_weather()
         return self.weather.current_temp
 
-    def convert_datetime_time_str(self, dt:datetime) -> str:
-        dt_str = dt.strftime()
+    def convert_datetime_str(self, dt:datetime) -> str:
+        dt_str = dt.strftime("%H:%M:%S")
+        return dt_str
 
     def log_data(self, data:str) -> None:
         with open("log/logged.txt", "a") as file:
@@ -139,4 +142,3 @@ class MOA:
 
 if __name__ == "__main__":
     moa = MOA()
-    print(moa.get_news())

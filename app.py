@@ -99,9 +99,9 @@ def moa_thread():
         """ TIME """
         # Gets & sets current time and updates page with new time
         current_time = MoA.get_current_time()
-        if (MoA.current_time != current_time):
+        if (MoA.current_time != current_time.strftime("%H:%M:%S")):
             socketio.emit('time', current_time.strftime('%H:%M:%S'))
-            MoA.current_time = current_time
+            MoA.current_time = current_time.strftime("%H:%M:%S")
 
         """ DATE """
         #  Gets & sets current date and updates page with new date
@@ -112,7 +112,7 @@ def moa_thread():
 
         """ SL TRAFFIC """
         # Checks if nearest departure has already past
-        if (MoA.current_time > MoA.get_nearest_trip_time() or MoA.sl_new):
+        if (current_time > MoA.get_nearest_trip_time() or MoA.sl_new):
             
             # if new travel destination is set by user
             if (MoA.sl_new):
@@ -122,9 +122,9 @@ def moa_thread():
                 MoA.log_data(data)
 
             # if current time is greater than next departure
-            elif (MoA.current_time > MoA.get_nearest_trip_time()):
+            elif (current_time > MoA.get_nearest_trip_time()):
                 # Log data
-                MoA.log_data(f"App Thread SL: refreshed destination schedule, current_time({MoA.current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
+                MoA.log_data(f"App Thread SL: refreshed destination schedule, current_time({current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
                 MoA.set_new_travel()
                 MoA.sl_new = False
                 MoA.log_data(f"App Thread SL: new time of nearest train departure={MoA.get_nearest_trip_time().strftime('%H:%M:%S')}")

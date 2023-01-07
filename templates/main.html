@@ -19,7 +19,7 @@
         <div class="sl">
             <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
             {% for trip in MOA.sl_travel %}
-                <p> {{ trip.origin_time }} -> {{ trip.destin_time }}</p>
+                <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
             {% endfor %}
         </div>
     </main>

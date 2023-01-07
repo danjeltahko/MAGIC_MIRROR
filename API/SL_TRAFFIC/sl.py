@@ -105,7 +105,7 @@ class SL:
                             trip_day = trip['Destination']['date'][8:10]
                             time_date = f"{trip_month}-{trip_day}-{trip_year} {trip['Destination']['time']}"
                             self.destin_t = datetime.strptime(time_date, "%m-%d-%y %H:%M:%S")
-                            self.total_t = self.destin_t - self.origin_t
+                            self.total_t = str(self.destin_t - self.origin_t)
 
                         # if transport changes necessary for trip, append stops in legs list
                         else:
@@ -123,6 +123,7 @@ class SL:
                                 "origin_time": origin_time_str,
                                 "destin_name": self.destin,
                                 "destin_time": destin_time_str,
+                                "total_time": self.total_t,
                                 "changes": self.legs}
                     self.travel_trips.append(new_travel)
 
