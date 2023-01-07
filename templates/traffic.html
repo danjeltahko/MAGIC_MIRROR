@@ -38,9 +38,9 @@
             <input type="submit" value="Submit">
         </form>
         <div class="topright" id="right">
-            <p>{{ trains[0].origin }} -> {{ trains[0].destin }}</p>
+            <p>{{ trains[0].origin_name }} -> {{ trains[0].destin_name }}</p>
             {% for trip in trains %}
-                <p>{{ trip.origin_t }} -> {{ trip.destin_t }}</p>
+                <p>{{ trip.origin_time }} -> {{ trip.destin_time }}</p>
             {% endfor %}
         </div>
     </main>

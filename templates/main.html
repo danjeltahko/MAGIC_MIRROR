@@ -13,10 +13,14 @@
 <body>
     <header></header>
     <main>
-        <h1> {{ clock.name }} </h1>
-        <ul>
-            <li> {{ clock.time }} </li>
-        </ul>
+        <h1 class="time"> {{ MOA.current_time }} </h1>
+        <h2 class="date"> {{ MOA.current_day }}</h2>
+        <div class="sl">
+            <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
+            {% for trip in MOA.sl_travel %}
+                <p> {{ trip.origin_time }} -> {{ trip.destin_time }}</p>
+            {% endfor %}
+        </div>
     </main>
     <footer></footer>
 </body>
