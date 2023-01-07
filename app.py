@@ -1,9 +1,10 @@
 try:
-    from flask import Flask, render_template, request
+    from flask import Flask, render_template, request, url_for, send_from_directory
     from flask_socketio import SocketIO
     from threading import Thread, Event
     from datetime import datetime
     import json
+    import os, sys
     from moa import MOA
 
 except ImportError as e:
@@ -14,7 +15,7 @@ __author__ = 'https://github.com/DanjelTahko'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 socketio = SocketIO(app)
 
 thread = Thread()
@@ -49,16 +50,30 @@ def adjust_lights():
 def adjust_traffic():
 
     if request.method == 'POST':
-        changed_train_from = request.form['From']
-        changed_train_tooo = request.form['To']
-        print(changed_train_tooo)
-        print(changed_train_tooo)
-        MoA.set_new_travel(changed_train_from, changed_train_tooo)
+        train_from = request.form['From']
+        train_tooo = request.form['To']
 
+        # If new search is same as before: do nothing
+        if (train_from == MoA.last_from_station and train_tooo == MoA.last_tooo_station):
+            MoA.log_data("App Route /traffic 'POST' request: same stations as before, refresh travel")
+        # If 'from' is same but 'to' is different: new id search for 'to'
+        elif (train_from == MoA.last_from_station and train_tooo != MoA.last_tooo_station):
+            MoA.log_data(f"App Route /traffic 'POST' request: new to_station={train_tooo}")
+            MoA.set_new_tooo_station(train_tooo)
+        # If 'from' is different but 'to' is same: new id search for 'from'
+        elif (train_from != MoA.last_from_station and train_tooo == MoA.last_tooo_station):
+            MoA.log_data(f"App Route /traffic 'POST' request: new fromstation={train_from}")
+            MoA.set_new_from_station(train_from)
+        # If both searches are different: new id search for both stations
+        else:
+            MoA.log_data(f"App Route /traffic 'POST' request: new travel search=({train_from}-{train_tooo})")
+            MoA.set_new_from_station(train_from)
+            MoA.set_new_tooo_station(train_tooo)
+        
+        # Sets new travel 
+        MoA.set_new_travel()
 
-    trains = MoA.get_travel()
-
-    return render_template('traffic.html', trains=trains)
+    return render_template('traffic.html', trains=MoA.get_travel())
 
 # Event Decoration 
 @socketio.on('connect')
@@ -97,16 +112,28 @@ def moa_thread():
 
         """ SL TRAFFIC """
         # Checks if nearest departure has already past
-        if (MoA.current_time > MoA.get_nearest_trip_time() or MoA.sl_refreshed):
+        if (MoA.current_time > MoA.get_nearest_trip_time() or MoA.sl_new):
+            
+            # if new travel destination is set by user
+            if (MoA.sl_new):
+                data = "App Thread SL: new destination is set from user"
+                MoA.sl_new = False
+                # Log data
+                MoA.log_data(data)
 
-            if (MoA.sl_refreshed):
-                MoA.sl_refreshed = False
+            # if current time is greater than next departure
+            elif (MoA.current_time > MoA.get_nearest_trip_time()):
+                # Log data
+                MoA.log_data(f"App Thread SL: refreshed destination schedule, current_time({MoA.current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
+                MoA.set_new_travel()
+                MoA.sl_new = False
+                MoA.log_data(f"App Thread SL: new time of nearest train departure={MoA.get_nearest_trip_time().strftime('%H:%M:%S')}")
+            # if somethings wrong??
             else:
-                print("Refreshed SL from thread")
-                MoA.refresh_travel()
+                print("App Thread SL = something is wrong..")
 
-            socketio.emit('sl', MoA.sl_travel)
-
+            travel = MoA.get_travel()
+            socketio.emit('sl', travel)
 
 
 

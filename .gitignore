@@ -2,10 +2,12 @@
 __pycache__
 .vscode/
 img/
+log/
 
 api_keys.py
 SL.json
 TODO.txt
+TODO.notes
 
 *.json
 
