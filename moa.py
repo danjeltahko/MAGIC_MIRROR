@@ -1,4 +1,4 @@
-from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit
+from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit, ToDo
 from datetime import datetime
 
 __version__ = 1.0
@@ -21,6 +21,9 @@ class MOA:
         self.last_tooo_station = "Sankt Eriksplan"
         self.sl_new = False
         self.__SL__(self.last_from_station, self.last_tooo_station)
+
+        # ToDo init
+        self.todo = ToDo()
 
         self.weather = Weather()
         self.news = Aftonbladet()
@@ -99,6 +102,24 @@ class MOA:
         # returns list with trips and their departures
         # return self.sl.get_trip()
         return self.sl_travel
+
+    
+    """ ### ToDo ### """
+    def get_auth(self):
+        return self.todo.authorize()
+
+    def auth_response(self, token):
+        self.todo.get_token(token)
+
+    def get_data(self, user_input:str):
+        return self.todo.graph_request(user_input)
+
+
+
+
+
+
+
 
 
 

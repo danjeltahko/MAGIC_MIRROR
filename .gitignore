@@ -3,6 +3,7 @@ __pycache__
 .vscode/
 img/
 log/
+cert/
 
 api_keys.py
 SL.json

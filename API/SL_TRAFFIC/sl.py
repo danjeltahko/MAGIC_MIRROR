@@ -1,6 +1,4 @@
 from API.api_keys import *
-from API.SL_TRAFFIC.train import Train
-from API.SL_TRAFFIC.travel import Travel
 from datetime import datetime, timedelta
 import requests 
 import json

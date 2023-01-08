@@ -1,11 +1,13 @@
 try:
-    from flask import Flask, render_template, request, url_for, send_from_directory
+    from flask import Flask, render_template, request, url_for, send_from_directory, redirect
     from flask_socketio import SocketIO
     from threading import Thread, Event
     from datetime import datetime
     import json
     import os, sys
     from moa import MOA
+
+    import requests
 
 except ImportError as e:
     print(e)
@@ -25,6 +27,37 @@ thread_stop_event = Event()
 @app.route("/")
 def index():
     return render_template("main.html", MOA=MoA)
+
+@app.route("/login/")
+def test_login_auth():
+    auth_url = MoA.get_auth()
+    print("Redirecting to Microsoft for Authorization")
+    return redirect(auth_url)
+
+@app.route("/getAzureToken/")
+def get_token():
+    if (request.args.get('error')):
+        print("Authorized Failed!!")
+    else:
+        code_token = request.args.get('code')
+        print("Authorized Successfully!!")
+        MoA.auth_response(code_token)
+
+    return redirect("/user/")
+
+
+@app.route("/graph/", methods=['POST', 'GET'])
+def test_graph():
+
+    if request.method == 'POST':
+        # Cleans string from form so only letters will be in search
+        input = request.form['user__input']
+        response_string = MoA.get_data(input)
+        return render_template('todo_foo.html', response_string=response_string)
+    
+    return render_template('todo_foo.html', response_string="No data")
+
+
 
 @app.route("/user/")
 def user_navigation():
@@ -91,7 +124,7 @@ def adjust_traffic():
 
 # Event Decoration 
 @socketio.on('connect')
-def send_time():
+def connect():
     MoA.connected += 1
     print(f"\nCONNECTED : {MoA.connected}\n")
     global thread
