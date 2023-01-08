@@ -51,26 +51,33 @@ def adjust_traffic():
 
     if request.method == 'POST':
 
+        # Cleans string from form so only letters will be in search
         train_from = request.form['From']
+        train_from = "".join([char for char in train_from if char.isalpha()])
         train_tooo = request.form['To']
+        train_tooo = "".join([char for char in train_tooo if char.isalpha()])
 
+        # If user input from form is empty, use previous search
         if (len(train_from) == 0):
             train_from = MoA.last_from_station
         if (len(train_tooo) == 0):
             train_tooo = MoA.last_tooo_station
 
-        # If new search is same as before: do nothing
+        # If new search is same as before: return html page with existing travel
         if (train_from == MoA.last_from_station and train_tooo == MoA.last_tooo_station):
             MoA.log_data("App Route /traffic 'POST' request: same stations as before, refresh travel")
             return render_template('traffic.html', trains=MoA.get_travel())
+
         # If 'from' is same but 'to' is different: new id search for 'to'
         elif (train_from == MoA.last_from_station and train_tooo != MoA.last_tooo_station):
             MoA.log_data(f"App Route /traffic 'POST' request: new to_station={train_tooo}")
             MoA.set_new_tooo_station(train_tooo)
+
         # If 'from' is different but 'to' is same: new id search for 'from'
         elif (train_from != MoA.last_from_station and train_tooo == MoA.last_tooo_station):
             MoA.log_data(f"App Route /traffic 'POST' request: new from_station={train_from}")
             MoA.set_new_from_station(train_from)
+
         # If both searches are different: new id search for both stations
         else:
             MoA.log_data(f"App Route /traffic 'POST' request: new travel search=({train_from}-{train_tooo})")
@@ -142,9 +149,6 @@ def moa_thread():
 
             travel = MoA.get_travel()
             socketio.emit('sl', travel)
-
-
-
 
 
 if __name__ == '__main__':
