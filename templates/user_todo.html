@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/static/js/user.js"></script>
     <link rel="stylesheet" href="/static/css/style.css">
-    <title>User Menu</title>
+    <title>Microsoft Todo</title>
 </head>
 <body>
     <header class="navbar">
@@ -28,12 +28,21 @@
     </header>
     <div class="header__breaker"></div>
     <main>
-        <div class="main">
-            <a class="main__link" href="/traffic/">🚂 SL Trafik</a>
-            <a class="main__link" href="/todo-list/">✅ TODO</a>
-            <a class="main__link" href="/" >🪞 Magic Mirror (DEMO)</a>
-        </div>
+
+        <a class="TODO__button" href="/todo-list/change-list/"> <h1>Change List</h1> </a>
+        <h1>{{ todo_list.name }}</h1>
+        <form class="form" action="/todo-list/" method="POST">
+            <label class="form__label">->  </label>
+            <input class="form__textinput" type="text">
+            <button type="submit">Lägg till</button>
+        </form>
+        
+        {% for task in todo_list.tasks %}
+        <h4> • {{ task }} </h4>
+        {% endfor %}
     </main>
-    <footer></footer>
+    
+
+
 </body>
 </html>

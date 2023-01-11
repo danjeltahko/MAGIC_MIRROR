@@ -21,63 +21,15 @@ app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 thread = Thread()
-thread_stop_event = Event()
 
 # View Decoration
 @app.route("/")
 def index():
     return render_template("main.html", MOA=MoA)
 
-@app.route("/login/")
-def test_login_auth():
-    auth_url = MoA.get_auth()
-    print("Redirecting to Microsoft for Authorization")
-    return redirect(auth_url)
-
-@app.route("/getAzureToken/")
-def get_token():
-    if (request.args.get('error')):
-        print("Authorized Failed!!")
-    else:
-        code_token = request.args.get('code')
-        print("Authorized Successfully!!")
-        MoA.auth_response(code_token)
-
-    return redirect("/user/")
-
-
-@app.route("/graph/", methods=['POST', 'GET'])
-def test_graph():
-
-    if request.method == 'POST':
-        # Cleans string from form so only letters will be in search
-        input = request.form['user__input']
-        response_string = MoA.get_data(input)
-        return render_template('todo_foo.html', response_string=response_string)
-    
-    return render_template('todo_foo.html', response_string="No data")
-
-
-
 @app.route("/user/")
 def user_navigation():
     return render_template('user_menu.html')
-
-@app.route('/testing')
-def weather_test():
-    current_weather = MOA.get_weather()
-    forecast = MOA.get_forecast_today()
-    return render_template('weather.html', current_weather=current_weather, today=forecast)
-
-@app.route('/m-m')
-def magic_mirror():
-    trains = MOA.get_trains()
-    forecast = MOA.get_forecast()
-    return render_template('magic_mirror.html', trains=trains, forecast=forecast)
-
-@app.route('/hue-lights')
-def adjust_lights():
-    return render_template('lights.html')
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
@@ -122,10 +74,112 @@ def adjust_traffic():
 
     return render_template('traffic.html', trains=MoA.get_travel())
 
+@app.route("/todo-list/", methods=['POST', 'GET'])
+def todo_list():
+    
+    if (MoA.todo.active):
+
+        if (request.method == 'POST'):
+
+            input_list = request.form['user__input']
+            todos = MoA.get_data(input_list)
+            MoA.log_data(f"App Route /todo-list/ 'POST' : Requested for new task-list {input_list}")
+            return render_template('user_todo.html', todo_list=todos)
+
+        else:
+            return render_template('user_todo.html', todo_list=MoA.todo_list)
+    
+    else:
+        MoA.log_data(f"App Route /todo-list : Not activated, redirected to /login/todo")
+        return redirect("/login/todo")
+
+
+@app.route("/todo-list/change-list/", methods=['POST', 'GET'])
+def change_todo_list():
+
+    if (MoA.todo.active):
+
+        if (request.method == 'POST'):
+            
+            if ('todo-list' in request.form):
+                MoA.set_data("TODO")
+                return redirect("/todo-list/")
+
+            elif ('shopping-list' in request.form):
+                MoA.set_data("Inköpslista")
+                return redirect("/todo-list/")
+
+            elif ('purchase' in request.form):
+                MoA.set_data("Handla")
+                return redirect("/todo-list/")
+            
+            else:
+                return render_template('user_change_todo.html')
+
+        else:
+            return render_template('user_change_todo.html')
+    
+    else:
+        print("Something went wrong in 'change_todo_list' not active?")
+        return redirect("/login/todo")
+
+
+# Log in route for API with OAuth
+@app.route("/login/<application>/")
+def test_login_auth(application):
+
+    # If we have to authenticate Microsoft To Do 
+    # redirecting to Microsoft url for authentication
+    # which in turn will redirect to our /getAzureToken
+    if (application == 'todo'):
+        # Creates authentication url 
+        auth_url = MoA.get_auth()
+        MoA.log_data(f"App Route /login/todo : Redirecting to Microsoft for Authorization")
+        print("Redirecting to Microsoft for Authorization")
+        return redirect(auth_url)
+
+    else:
+        MoA.log_data(f"App Route /login/{application} : Tried to log in to {application}, but not found")
+        return render_template('404.html', data={"page": "Log in", "variable": application})
+
+@app.route("/getAzureToken/")
+def get_token():
+
+    if (request.args.get('error')):
+        MoA.log_data(f"App Route /getAzureToken/ : Authorized Failed! Could not receive token ")
+        print("Authorized Failed!!")
+    else:
+        code_token = request.args.get('code')
+        MoA.log_data(f"App Route /getAzureToken/ : Authorized Successfully! Token received")
+        print("Authorized Successfully!!")
+        MoA.auth_response(code_token)
+        MoA.set_data("Inköpslista")
+
+    return redirect("/todo-list/")
+
+
+@app.route('/testing')
+def weather_test():
+    current_weather = MOA.get_weather()
+    forecast = MOA.get_forecast_today()
+    return render_template('weather.html', current_weather=current_weather, today=forecast)
+
+@app.route('/m-m')
+def magic_mirror():
+    trains = MOA.get_trains()
+    forecast = MOA.get_forecast()
+    return render_template('magic_mirror.html', trains=trains, forecast=forecast)
+
+@app.route('/hue-lights')
+def adjust_lights():
+    return render_template('lights.html')
+
+
 # Event Decoration 
 @socketio.on('connect')
 def connect():
     MoA.connected += 1
+    print(f"\nNEW CONNECTION")
     print(f"\nCONNECTED : {MoA.connected}\n")
     global thread
     if not thread.is_alive():
@@ -135,13 +189,14 @@ def connect():
 @socketio.on('disconnect')
 def disconnect():
     MoA.connected -= 1
-    print(f"\nDISCONNECTED\n")
+    print(f"\nDISCONNECTION")
+    print(f"CONNECTED : {MoA.connected}\n")
 
 
 def moa_thread():
 
     # Magic Mirror thread loop with MOA functions
-    while not thread_stop_event.isSet():
+    while (MoA.connected):
         
         """ TIME """
         # Gets & sets current time and updates page with new time
@@ -163,7 +218,7 @@ def moa_thread():
             
             # if new travel destination is set by user
             if (MoA.sl_new):
-                data = "App Thread SL: new destination is set from user"
+                data = "App Thread SL: new destination is set from user or __init__"
                 MoA.sl_new = False
                 # Log data
                 MoA.log_data(data)
@@ -182,6 +237,9 @@ def moa_thread():
 
             travel = MoA.get_travel()
             socketio.emit('sl', travel)
+
+        
+        
 
 
 if __name__ == '__main__':

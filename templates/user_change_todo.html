@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/static/js/user.js"></script>
     <link rel="stylesheet" href="/static/css/style.css">
-    <title>User Menu</title>
+    <title>Change TODO List</title>
 </head>
 <body>
     <header class="navbar">
@@ -28,11 +28,11 @@
     </header>
     <div class="header__breaker"></div>
     <main>
-        <div class="main">
-            <a class="main__link" href="/traffic/">🚂 SL Trafik</a>
-            <a class="main__link" href="/todo-list/">✅ TODO</a>
-            <a class="main__link" href="/" >🪞 Magic Mirror (DEMO)</a>
-        </div>
+        <form class="form" action="/todo-list/change-list/" method="POST">
+            <button class="form__submit" type="submit" value="Submit" name="todo-list">TODO</button>
+            <button class="form__submit" type="submit" value="Submit" name="shopping-list">Inköpslista</button>
+            <button class="form__submit" type="submit" value="Submit" name="purchase">Handla</button>
+        </form>
     </main>
     <footer></footer>
 </body>

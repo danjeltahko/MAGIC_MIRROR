@@ -18,22 +18,24 @@ class MOA:
         self.sl = SL()
         self.sl_travel = []
         self.last_from_station = "Vällingby"
-        self.last_tooo_station = "Sankt Eriksplan"
+        self.last_tooo_station = "Sundbyberg"
         self.sl_new = False
         self.__SL__(self.last_from_station, self.last_tooo_station)
 
         # ToDo init
         self.todo = ToDo()
+        self.todo_list = {}
 
-        self.weather = Weather()
-        self.news = Aftonbladet()
-        self.hue = Hue()
+        # self.weather = Weather()
+        # self.news = Aftonbladet()
+        # self.hue = Hue()
 
+        # General init
         self.connected = 0
 
 
     """ ### Time & Date ### """
-    def __DATETIME__(self):
+    def __DATETIME__(self) -> None:
         self.current_time = self.get_current_time().strftime("%H:%M:%S")
         self.current_day = self.get_current_day()
 
@@ -98,7 +100,7 @@ class MOA:
         nearest_time = self.sl_travel[0]['origin_time']
         return datetime.strptime(nearest_time, "%m-%d-%y %H:%M:%S")
 
-    def get_travel(self):
+    def get_travel(self) -> list:
         # returns list with trips and their departures
         # return self.sl.get_trip()
         return self.sl_travel
@@ -111,8 +113,13 @@ class MOA:
     def auth_response(self, token):
         self.todo.get_token(token)
 
-    def get_data(self, user_input:str):
-        return self.todo.graph_request(user_input)
+    def set_data(self, user_input:str) -> None:
+        self.todo_list = self.todo.return_tasks(user_input)
+        
+    def get_data(self, user_input:str) -> dict:
+        self.todo_list = self.todo.return_tasks(user_input)
+        return self.todo_list
+
 
 
 
