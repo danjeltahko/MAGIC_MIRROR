@@ -83,16 +83,12 @@ def todo_list():
     if (MoA.todo.active):
 
         if (request.method == 'POST'):
-
-            input_list = request.form['user__input']
-            todos = MoA.get_data(input_list)
-            MoA.log_data(f"App Route /todo-list/ 'POST' : Requested for new task-list {input_list}")
-            # lägg till nya todos
-            # MoA.todo_refreshed = True
-            return render_template('user_todo.html', todo_list=todos)
-
-        else:
-            return render_template('user_todo.html', todo_list=MoA.todo_list)
+            input_task = request.form['todo__task']
+            MoA.add_new_task(input_task)
+            MoA.log_data(f"App Route /todo-list/ 'POST' : Added new task ({input_task}) to task-list")
+        
+        todo_list = MoA.get_list()
+        return render_template('user_todo.html', todo_list=todo_list)
     
     else:
         MoA.log_data(f"App Route /todo-list : Not activated, redirected to /login/todo")
@@ -107,18 +103,15 @@ def change_todo_list():
         if (request.method == 'POST'):
             
             if ('todo-list' in request.form):
-                MoA.set_data("TODO")
-                MoA.todo_refreshed = True
+                MoA.set_other_list("TODO")
                 return redirect("/todo-list/")
 
             elif ('shopping-list' in request.form):
-                MoA.set_data("Inköpslista")
-                MoA.todo_refreshed = True
+                MoA.set_other_list("Inköpslista")
                 return redirect("/todo-list/")
 
             elif ('purchase' in request.form):
-                MoA.set_data("Handla")
-                MoA.todo_refreshed = True
+                MoA.set_other_list("Handla")
                 return redirect("/todo-list/")
             
             else:
@@ -161,9 +154,8 @@ def get_token():
         code_token = request.args.get('code')
         MoA.log_data(f"App Route /getAzureToken/ : Authorized Successfully! Token received")
         print("Authorized Successfully!!")
-        MoA.auth_response(code_token)
-        MoA.set_data("Inköpslista")
-        MoA.todo_refreshed = True
+        MoA.set_auth(code_token)
+        MoA.set_other_list("Inköpslista")
 
     return redirect("/todo-list/")
 
@@ -256,6 +248,8 @@ def moa_thread():
                 print(MoA.todo_list)
                 socketio.emit('todo', MoA.todo_list)
                 MoA.todo_refreshed = False
+            
+            
 
 
         

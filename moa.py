@@ -108,24 +108,42 @@ class MOA:
 
     
     """ ### ToDo ### """
-    def get_auth(self):
+    def get_auth(self) -> str:
+        """ returns microsoft log in url for authentication """
         return self.todo.authorize()
 
-    def auth_response(self, token):
+    def set_auth(self, token) -> None:
+        """ gets access token and sets authorization token"""
         self.todo.get_token(token)
 
-    def refresh_auth_token(self):
+    def refresh_auth_token(self) -> None:
+        """ refreshing authorization token """
         self.todo.refresh_get_token()
 
-    def set_data(self, user_input:str) -> None:
+    def set_other_list(self, user_input:str) -> None:
+        print("Sets new list inside (set_other_list)")
         self.todo_list = self.todo.return_tasks(user_input)
+        self.todo_refreshed = True
         
-    def get_data(self, user_input:str) -> dict:
+    def get_other_list(self, user_input:str) -> dict:
+        print("Sets new list inside (get_other_list)")
         self.todo_list = self.todo.return_tasks(user_input)
+        self.todo_refreshed = True
+        return self.todo_list
+
+    def get_list(self) -> dict:
+        print("Sets new list inside (get_list)")
+        self.todo_list = self.todo.return_tasks(self.todo_list["name"])
+        self.todo_refreshed = True
         return self.todo_list
 
     def get_expired_time(self) -> datetime:
         return self.todo.expires_in
+
+    def add_new_task(self, task_input):
+        print("Sets new list inside (add_new_task)")
+        self.todo.add_task(task_input)
+        self.todo_refreshed = True
 
 
 

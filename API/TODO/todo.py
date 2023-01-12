@@ -1,6 +1,7 @@
 from API.api_keys import *
 from datetime import datetime, timedelta
 from urllib import parse
+from threading import Thread
 import requests
 import json
 
@@ -20,6 +21,8 @@ class ToDo:
         self.access_token = None
         self.expires_in = None
         self.refresh_token = None
+
+        self.list_name = None
 
     def authorize(self) -> str:
         """ Create and return authorization url for Microsoft Todo """
@@ -97,13 +100,15 @@ class ToDo:
     def return_tasks(self, list_name) -> dict:
 
         try:
-            URL = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[list_name]}/tasks"
+            self.list_name = list_name
+            URL = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[self.list_name]}/tasks"
             response = requests.get(URL, headers=self.header)
             task_data = {"name": list_name}
             tasks = []
             print(f"return_tasks : {response}")
             if (response.status_code == 200):
                 data = json.loads(response.text)
+                completed_tasks = []
                 for task in data["value"]:
 
                     # Only add tasks thats not done
@@ -111,15 +116,14 @@ class ToDo:
                         tasks.append(task["title"])
                     # Remove done tasks
                     else:
-                        try:
-                            delete_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[list_name]}/tasks/{task['id']}"
-                            delete_res = requests.delete(delete_url, headers=self.header)
-                            print(f"{delete_res.status_code} - Deleted {task['title']} task")
-                        except:
-                            print(f"Could not delete {task['title']} task")
+                        completed_tasks.append(task["id"])
+                
+                thread = Thread(target=self.delete_tasks_thread, args=(completed_tasks,))
+                thread.start()
 
                 task_data["tasks"] = tasks
                 return task_data
+
             else:
                 print("Could not retrive data from microsoft graph, raise error?")
                 self.active = False
@@ -131,3 +135,39 @@ class ToDo:
             self.active = False
             self.refresh_get_token()
             return None
+
+    def add_task(self, new_task):
+
+        try:
+            URL = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[self.list_name]}/tasks"
+            data = {
+                "title": new_task,
+                "categories": [],
+                "linkedResources":[
+                    {
+                        "webUrl":"http://microsoft.com",
+                        "applicationName":"Magic Mirror",
+                        "displayName":"Magic Mirror"
+                    }
+                ]
+            }
+            response = requests.post(URL, json=data, headers=self.header)
+            print(f"Added new task : {new_task} [{response.status_code}]")
+            if (response.status_code == 201):
+                print(f"Successfully added new task to {self.list_name}")
+            else:
+                print(f"Failed to add new task to {self.list_name}")
+                
+        except:
+            print("Could not create new task to list")
+
+
+    def delete_tasks_thread(self, completes_tasks):
+
+        for task in completes_tasks:
+            try:
+                delete_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[self.list_name]}/tasks/{task}"
+                delete_res = requests.delete(delete_url, headers=self.header)
+                print(f"{delete_res.status_code} - Deleted {task} task")
+            except:
+                print(f"Could not delete {task} task")
