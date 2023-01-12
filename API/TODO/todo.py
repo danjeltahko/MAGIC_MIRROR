@@ -105,7 +105,19 @@ class ToDo:
             if (response.status_code == 200):
                 data = json.loads(response.text)
                 for task in data["value"]:
-                    tasks.append(task["title"])
+
+                    # Only add tasks thats not done
+                    if (task["status"] == "notStarted"):
+                        tasks.append(task["title"])
+                    # Remove done tasks
+                    else:
+                        try:
+                            delete_url = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[list_name]}/tasks/{task['id']}"
+                            delete_res = requests.delete(delete_url, headers=self.header)
+                            print(f"{delete_res.status_code} - Deleted {task['title']} task")
+                        except:
+                            print(f"Could not delete {task['title']} task")
+
                 task_data["tasks"] = tasks
                 return task_data
             else:
