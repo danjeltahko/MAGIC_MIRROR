@@ -14,13 +14,26 @@
 <body>
     <header></header>
     <main>
-        <h1 class="time"> {{ MOA.current_time }} </h1>
-        <h2 class="date"> {{ MOA.current_day }}</h2>
-        <div class="sl">
-            <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
-            {% for trip in MOA.sl_travel %}
-                <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
-            {% endfor %}
+        <div class="left__container">
+
+            <h1 class="time"> {{ MOA.current_time }} </h1>
+
+            <h2 class="date"> {{ MOA.current_day }}</h2>
+
+            <div class="sl">
+                <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
+                {% for trip in MOA.sl_travel %}
+                    <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="todo">
+                <h3> {{ MOA.todo_list['name']}} </h3>
+                {% for task in MOA.todo_list['tasks'] %}
+                    <p> {{ task }} </p>
+                {% endfor %}
+            </div>
+            
         </div>
     </main>
     <footer></footer>

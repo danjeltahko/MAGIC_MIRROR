@@ -30,10 +30,9 @@ class SL:
                 return data["ResponseData"]
             except KeyError as e:
                 with open("log/errors.txt", "a") as file:
-                    dt = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+                    dt = datetime.now().strftime("%d-%m-%y %H:%M:%S")
                     error_data = f"[{dt}] - {e} : {data}\n"
                     file.write(error_data)
-                    file.close()
 
     def get_station_id(self, stations:list, index:int) -> dict:
         """ returns dictionary at list index input: name, id and type. """
@@ -93,7 +92,7 @@ class SL:
                             trip_month = trip['Origin']['date'][5:7]
                             trip_day = trip['Origin']['date'][8:10]
                             time_date = f"{trip_month}-{trip_day}-{trip_year} {trip['Origin']['time']}"
-                            self.origin_t = datetime.strptime(time_date, "%m-%d-%y %H:%M:%S")
+                            self.origin_t = datetime.strptime(time_date, "%d-%m-%y %H:%M:%S")
                         
                         # if last transport in trip, set destination as destination
                         if (trip == trip_data["LegList"]["Leg"][-1]):
@@ -102,7 +101,7 @@ class SL:
                             trip_month = trip['Destination']['date'][5:7]
                             trip_day = trip['Destination']['date'][8:10]
                             time_date = f"{trip_month}-{trip_day}-{trip_year} {trip['Destination']['time']}"
-                            self.destin_t = datetime.strptime(time_date, "%m-%d-%y %H:%M:%S")
+                            self.destin_t = datetime.strptime(time_date, "%d-%m-%y %H:%M:%S")
                             self.total_t = str(self.destin_t - self.origin_t)
 
                         # if transport changes necessary for trip, append stops in legs list
@@ -115,8 +114,8 @@ class SL:
                             self.legs.append(new_train)
 
                     # create travel object of trip and append to travel list
-                    origin_time_str = self.origin_t.strftime("%m-%d-%y %H:%M:%S")
-                    destin_time_str = self.destin_t.strftime("%m-%d-%y %H:%M:%S")
+                    origin_time_str = self.origin_t.strftime("%d-%m-%y %H:%M:%S")
+                    destin_time_str = self.destin_t.strftime("%d-%m-%y %H:%M:%S")
                     new_travel = {"origin_name": self.origin,
                                 "origin_time": origin_time_str,
                                 "destin_name": self.destin,
@@ -130,19 +129,16 @@ class SL:
             
             except (TypeError, KeyError) as e:
                 with open("log/errors.txt", "a") as file:
-                    dt = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+                    dt = datetime.now().strftime("%d-%m-%y %H:%M:%S")
                     error_data = f"[{dt}] - {e} : {data}\n"
-                    file.write(error_data)
-                    file.close()
-                
+                    file.write(error_data)                
                 return self.travel_trips
         
         else:
             with open("log/errors.txt", "a") as file:
-                dt = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+                dt = datetime.now().strftime("%d-%m-%y %H:%M:%S")
                 error_data = f"[{dt}] - set_trip API response : [{response.status_code}]\n"
                 file.write(error_data)
-                file.close()
             return self.travel_trips
 
     def get_trip(self):

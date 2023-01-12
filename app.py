@@ -25,14 +25,17 @@ thread = Thread()
 # View Decoration
 @app.route("/")
 def index():
+    """ View for Magic Mirror """
     return render_template("main.html", MOA=MoA)
 
 @app.route("/user/")
 def user_navigation():
+    """ View for User Menu """
     return render_template('user_menu.html')
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
+    """ View for Traffic, change trip for Magic Mirror"""
 
     if request.method == 'POST':
 
@@ -84,6 +87,8 @@ def todo_list():
             input_list = request.form['user__input']
             todos = MoA.get_data(input_list)
             MoA.log_data(f"App Route /todo-list/ 'POST' : Requested for new task-list {input_list}")
+            # lägg till nya todos
+            # MoA.todo_refreshed = True
             return render_template('user_todo.html', todo_list=todos)
 
         else:
@@ -103,14 +108,17 @@ def change_todo_list():
             
             if ('todo-list' in request.form):
                 MoA.set_data("TODO")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
 
             elif ('shopping-list' in request.form):
                 MoA.set_data("Inköpslista")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
 
             elif ('purchase' in request.form):
                 MoA.set_data("Handla")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
             
             else:
@@ -138,6 +146,7 @@ def test_login_auth(application):
         print("Redirecting to Microsoft for Authorization")
         return redirect(auth_url)
 
+    # If application ID doesnt match with any application
     else:
         MoA.log_data(f"App Route /login/{application} : Tried to log in to {application}, but not found")
         return render_template('404.html', data={"page": "Log in", "variable": application})
@@ -154,6 +163,7 @@ def get_token():
         print("Authorized Successfully!!")
         MoA.auth_response(code_token)
         MoA.set_data("Inköpslista")
+        MoA.todo_refreshed = True
 
     return redirect("/todo-list/")
 
@@ -237,6 +247,16 @@ def moa_thread():
 
             travel = MoA.get_travel()
             socketio.emit('sl', travel)
+
+        """ TODO """
+        if (MoA.todo.active):
+            
+            if (MoA.todo_refreshed):
+                print("inside TODO thread")
+                print(MoA.todo_list)
+                socketio.emit('todo', MoA.todo_list)
+                MoA.todo_refreshed = False
+
 
         
         

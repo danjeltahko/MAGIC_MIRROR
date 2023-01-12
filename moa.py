@@ -24,7 +24,8 @@ class MOA:
 
         # ToDo init
         self.todo = ToDo()
-        self.todo_list = {}
+        self.todo_list = {"name": "No Data Available"}
+        self.todo_refreshed = False
 
         # self.weather = Weather()
         # self.news = Aftonbladet()
@@ -40,8 +41,8 @@ class MOA:
         self.current_day = self.get_current_day()
 
     def get_current_time(self) -> datetime:
-        """ Returns current time datetime.time: 22:50:30"""
-        return datetime.strptime(datetime.now().strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+        """ Returns current time datetime.time: 23-01-2022 22:50:30"""
+        return datetime.strptime(datetime.now().strftime("%d-%m-%y %H:%M:%S"), "%d-%m-%y %H:%M:%S")
 
     def get_current_day(self) -> str:
         """ Returns current date string: Fre 6 Jan """
@@ -95,7 +96,7 @@ class MOA:
             self.log_data("MOA SL: Failed to created new Travel with new trains and departures. (See ERROR for more info)")
 
     def get_nearest_trip_time(self) -> datetime:
-        """ Returns first departure from train/trip in list: 22:50:30 """
+        """ Returns first departure from train/trip in list: 01-23-2022 22:50:30 """
         # returns first/nearest departure
         nearest_time = self.sl_travel[0]['origin_time']
         return datetime.strptime(nearest_time, "%m-%d-%y %H:%M:%S")
@@ -113,12 +114,18 @@ class MOA:
     def auth_response(self, token):
         self.todo.get_token(token)
 
+    def refresh_auth_token(self):
+        self.todo.refresh_get_token()
+
     def set_data(self, user_input:str) -> None:
         self.todo_list = self.todo.return_tasks(user_input)
         
     def get_data(self, user_input:str) -> dict:
         self.todo_list = self.todo.return_tasks(user_input)
         return self.todo_list
+
+    def get_expired_time(self) -> datetime:
+        return self.todo.expires_in
 
 
 
@@ -158,7 +165,7 @@ class MOA:
 
     def log_data(self, data:str) -> None:
         with open("log/logged.txt", "a") as file:
-            dt = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+            dt = datetime.now().strftime("%d-%m-%y %H:%M:%S")
             log_file = f"[{dt}] - {data}\n"
             file.write(log_file)
             file.close()
