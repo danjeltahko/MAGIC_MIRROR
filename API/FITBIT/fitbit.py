@@ -1,4 +1,5 @@
 import webbrowser
+from urllib import parse
 import requests
 import json
 
@@ -23,18 +24,31 @@ class Fitbit:
             "Content-Type": "application/x-www-form-urlencoded"
         }
 
+    def authorize(self) -> str:
+        """ Create and return authorization url for Fitbit """
+        params = {
+            "client_id": FITBIT_CLIENT_ID,
+            "response_type": "code",
+            "scope": "activity cardio_fitness electrocardiogram heartrate location nutrition oxygen_saturation profile respiratory_rate settings sleep social temperature weight",
+            "code_challenge": FITBIT_code_challenge,
+            "code_challenge_method": "S256",
+            "state": FITBIT_state
+
+        }
+        return f"https://www.fitbit.com/oauth2/authorize?{parse.urlencode(params)}"
+
     def open_browser(self):
         # can we do this to flask/django page? 127.0.0.1:1312/token/ ?? extract it directly
-        url = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={self.client_id}&scope=activity+cardio_fitness+electrocardiogram+heartrate+location+nutrition+oxygen_saturation+profile+respiratory_rate+settings+sleep+social+temperature+weight&code_challenge={PKCE_challenge}&code_challenge_method=S256&state={PKCE_state}"
+        url = f"state={FITBIT_state}"
         webbrowser.open(url)
         self.auth_code = str(input("Auth code -> "))
 
     def get_token(self):
         data = {
             "grant_type": "authorization_code",
-            "client_id": self.client_id,
+            "client_id": FITBIT_CLIENT_ID,
             "code": self.auth_code,
-            "code_verifier": PKCE_verifier
+            "code_verifier": FITBIT_code_verifier
         }
         response = requests.post(self.auth_url, data=data, headers=self.header)
         print(response)

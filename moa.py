@@ -25,7 +25,13 @@ class MOA:
         # ToDo init
         self.todo = ToDo()
         self.todo_list = {"name": "No Data Available"}
+        self.todo_active = False
         self.todo_refreshed = False
+        self.todo_prev_time = "00:00"
+
+        # Fitbit init
+        self.fitbit = Fitbit()
+        self.fitbit_active = False
 
         # self.weather = Weather()
         # self.news = Aftonbladet()
@@ -42,7 +48,7 @@ class MOA:
 
     def get_current_time(self) -> datetime:
         """ Returns current time datetime.time: 23-01-2022 22:50:30"""
-        return datetime.strptime(datetime.now().strftime("%d-%m-%y %H:%M:%S"), "%d-%m-%y %H:%M:%S")
+        return datetime.strptime(datetime.now().strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
 
     def get_current_day(self) -> str:
         """ Returns current date string: Fre 6 Jan """
@@ -108,7 +114,14 @@ class MOA:
 
     
     """ ### ToDo ### """
-    def get_auth(self) -> str:
+    def __TODO__(self):
+        """ When access token is received, set standard list, timestamp & activate"""
+        self.set_other_list("Inköpslista")
+        self.todo_prev_time = self.get_current_time().strftime("%H:%M")
+        self.todo_active = True
+        self.todo_refreshed = True
+
+    def get_todo_auth(self) -> str:
         """ returns microsoft log in url for authentication """
         return self.todo.authorize()
 
@@ -123,18 +136,15 @@ class MOA:
     def set_other_list(self, user_input:str) -> None:
         print("Sets new list inside (set_other_list)")
         self.todo_list = self.todo.return_tasks(user_input)
-        self.todo_refreshed = True
         
     def get_other_list(self, user_input:str) -> dict:
-        print("Sets new list inside (get_other_list)")
+        print("Get new list inside (get_other_list)")
         self.todo_list = self.todo.return_tasks(user_input)
-        self.todo_refreshed = True
         return self.todo_list
 
     def get_list(self) -> dict:
-        print("Sets new list inside (get_list)")
+        print("Gets new list inside (get_list)")
         self.todo_list = self.todo.return_tasks(self.todo_list["name"])
-        self.todo_refreshed = True
         return self.todo_list
 
     def get_expired_time(self) -> datetime:
@@ -143,7 +153,13 @@ class MOA:
     def add_new_task(self, task_input):
         print("Sets new list inside (add_new_task)")
         self.todo.add_task(task_input)
-        self.todo_refreshed = True
+
+
+    """ ### FITBIT ### """
+    def get_fitbit_auth(self) -> str:
+        """ returns microsoft log in url for authentication """
+        return self.fitbit.authorize()
+    
 
 
 
@@ -183,7 +199,7 @@ class MOA:
 
     def log_data(self, data:str) -> None:
         with open("log/logged.txt", "a") as file:
-            dt = datetime.now().strftime("%d-%m-%y %H:%M:%S")
+            dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
             log_file = f"[{dt}] - {data}\n"
             file.write(log_file)
             file.close()

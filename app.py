@@ -80,25 +80,39 @@ def adjust_traffic():
 @app.route("/todo-list/", methods=['POST', 'GET'])
 def todo_list():
     
-    if (MoA.todo.active):
+    if (MoA.todo_active):
 
         if (request.method == 'POST'):
             input_task = request.form['todo__task']
             MoA.add_new_task(input_task)
             MoA.log_data(f"App Route /todo-list/ 'POST' : Added new task ({input_task}) to task-list")
-        
-        todo_list = MoA.get_list()
-        return render_template('user_todo.html', todo_list=todo_list)
+            get_refresh = MoA.get_list()
+            MoA.todo_refreshed = True
+
+        else:
+            get_refresh = MoA.get_list()
+
+        return render_template('user_todo.html', todo_list=get_refresh)
     
     else:
         MoA.log_data(f"App Route /todo-list : Not activated, redirected to /login/todo")
         return redirect("/login/todo")
 
 
+@app.route("/fitbit/")
+def fitbit():
+
+    if (MoA.fitbit_active):
+        return "Activated"
+
+    else:
+        MoA.log_data(f"App Route /fitbit : Not activated, redirected to /login/fitbit")
+        return redirect("/login/fitbit")
+
 @app.route("/todo-list/change-list/", methods=['POST', 'GET'])
 def change_todo_list():
 
-    if (MoA.todo.active):
+    if (MoA.todo_active):
 
         if (request.method == 'POST'):
             
@@ -134,9 +148,18 @@ def test_login_auth(application):
     # which in turn will redirect to our /getAzureToken
     if (application == 'todo'):
         # Creates authentication url 
-        auth_url = MoA.get_auth()
+        auth_url = MoA.get_todo_auth()
         MoA.log_data(f"App Route /login/todo : Redirecting to Microsoft for Authorization")
         print("Redirecting to Microsoft for Authorization")
+        return redirect(auth_url)
+
+    # If we have to log in and authenticate Fitbit
+    # redirecting to fotbit url for authentication
+    # which in turn will redirect to our /getFitbitToken
+    elif (application == 'fitbit'):
+        auth_url = MoA.get_fitbit_auth()
+        MoA.log_data(f"App Route /login/todo : Redirecting to Fitbit for Authorization")
+        print("Redirecting to Fitbit for Authorization")
         return redirect(auth_url)
 
     # If application ID doesnt match with any application
@@ -153,11 +176,26 @@ def get_token():
     else:
         code_token = request.args.get('code')
         MoA.log_data(f"App Route /getAzureToken/ : Authorized Successfully! Token received")
-        print("Authorized Successfully!!")
+        print("Authorized Successfully Token received in /getAzureToken/!!")
         MoA.set_auth(code_token)
-        MoA.set_other_list("Inköpslista")
+        MoA.__TODO__()
 
     return redirect("/todo-list/")
+
+@app.route("/getFitbitToken/")
+def get_fitbit_token():
+
+    if (request.args.get('error')):
+        MoA.log_data(f"App Route getFitbitToken/ : Authorized Failed! Could not receive token ")
+        print("Authorized Failed!!")
+    else:
+        code_token = request.args.get('code')
+        MoA.log_data(f"App Route getFitbitToken/ : Authorized Successfully! Token received")
+        print("Authorized Successfully Token received in /getAzureToken/!!")
+        # MoA.set_auth(code_token)
+        # MoA.set_other_list("Inköpslista")
+
+    return redirect("/fitbit/")
 
 
 @app.route('/testing')
@@ -241,18 +279,21 @@ def moa_thread():
             socketio.emit('sl', travel)
 
         """ TODO """
-        if (MoA.todo.active):
+        if (MoA.todo_active):
             
             if (MoA.todo_refreshed):
-                print("inside TODO thread")
-                print(MoA.todo_list)
+                print("Sends update to socket - inside TODO thread because of refresh")
                 socketio.emit('todo', MoA.todo_list)
                 MoA.todo_refreshed = False
-            
-            
+                MoA.log_data(f"App Thread TODO : Updated Mirror because of todo refresh")
 
+            elif (MoA.todo_prev_time != current_time.strftime("%H:%M")):
+                print("inside TODO thread because of time passed")
+                refreshed_todo = MoA.get_list()
+                socketio.emit('todo', refreshed_todo)
+                MoA.log_data(f"App Thread TODO : Updated Mirror because of time passed {MoA.todo_prev_time}-{current_time.strftime('%H:%M')}")
+                MoA.todo_prev_time = current_time.strftime("%H:%M")
 
-        
         
 
 

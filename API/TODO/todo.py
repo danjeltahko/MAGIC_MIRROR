@@ -15,8 +15,6 @@ class ToDo:
             "Accept-Encoding": "gzip, deflate, br",
             "connection":"keep-alive"
         }
-
-        self.active = False
         self.token_type = None
         self.access_token = None
         self.expires_in = None
@@ -34,7 +32,7 @@ class ToDo:
             "scope": "offline_access Tasks.ReadWrite",
             "state": "007"
         }
-        URL = f"https://login.microsoftonline.com/common/oauth2/v2.0/authorize?{parse.urlencode(params) }"
+        URL = f"https://login.microsoftonline.com/common/oauth2/v2.0/authorize?{parse.urlencode(params)}"
         return URL
    
     def get_token(self, code:str) -> None:
@@ -49,21 +47,19 @@ class ToDo:
             "client_secret": AZURE_CLIENT_VALUE
         }
         response = requests.post(URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        print(response)
+        print(f"Access token request:  {response.status_code}")
         if (response.status_code == 200):
             load = json.loads(response.text)
             self.access_token = load["access_token"]
-            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%d-%m-%y %H:%M:%S"), "%d-%m-%y %H:%M:%S")
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
             self.token_type = load["token_type"]
             self.authorization = self.token_type + " " + self.access_token
             self.header["Authorization"] = self.authorization
             self.refresh_token = load["refresh_token"]
-            self.active = True
         else:
-            self.active = False
             print("Failed to retrive access token...")
 
-    def refresh_get_token (self):
+    def refresh_get_token(self) -> None:
         """ Refresh access token """
 
         print("Trying to refresh access token with refresh token")
@@ -82,20 +78,13 @@ class ToDo:
             load = json.loads(response.text)
             self.access_token = load["access_token"]
             self.token_type = load["token_type"]
-            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%d-%m-%y %H:%M:%S"), "%d-%m-%y %H:%M:%S")
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
             self.authorization = self.token_type + " " + self.access_token
             self.header["Authorization"] = self.authorization
             self.refresh_token = load["refresh_token"]
-            self.active = True
             print("Successfully refreshed access token with refresh token")
         else:
-            self.active = False
             print("Filed to refreshed access token with refresh token")
-
-    def get_all_tasks(self):
-        URL = "https://graph.microsoft.com/v1.0/me/todo/lists"
-        response = requests.get(URL, headers=self.header)
-        return response
 
     def return_tasks(self, list_name) -> dict:
 
@@ -126,17 +115,13 @@ class ToDo:
 
             else:
                 print("Could not retrive data from microsoft graph, raise error?")
-                self.active = False
-                self.refresh_get_token()
                 return None
 
         except:
             print("except in try & catch with todo tasks")
-            self.active = False
-            self.refresh_get_token()
             return None
 
-    def add_task(self, new_task):
+    def add_task(self, new_task) -> None:
 
         try:
             URL = f"https://graph.microsoft.com/v1.0/me/todo/lists/{TODO_LIST_ID[self.list_name]}/tasks"
@@ -162,7 +147,7 @@ class ToDo:
             print("Could not create new task to list")
 
 
-    def delete_tasks_thread(self, completes_tasks):
+    def delete_tasks_thread(self, completes_tasks) -> None:
 
         for task in completes_tasks:
             try:
