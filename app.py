@@ -103,7 +103,7 @@ def todo_list():
 def fitbit():
 
     if (MoA.fitbit_active):
-        
+
         return redirect("/user/")
 
     else:
@@ -119,14 +119,17 @@ def change_todo_list():
             
             if ('todo-list' in request.form):
                 MoA.set_other_list("TODO")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
 
             elif ('shopping-list' in request.form):
                 MoA.set_other_list("Inköpslista")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
 
             elif ('purchase' in request.form):
                 MoA.set_other_list("Handla")
+                MoA.todo_refreshed = True
                 return redirect("/todo-list/")
             
             else:

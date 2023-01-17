@@ -191,16 +191,6 @@ class MOA:
     def get_sleep(self):
         return self.fitbit_list
 
-
-        """
-        4/4
-        4/4
-
-        4/4
-        3/4
-        0/2
-        15/18
-        """
     
 
 
