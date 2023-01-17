@@ -31,7 +31,9 @@ class MOA:
 
         # Fitbit init
         self.fitbit = Fitbit()
+        self.fitbit_list = {"summary": {"hours": 0,"minutes": 0}}
         self.fitbit_active = False
+        self.fitbit_refreshed = False
 
         # self.weather = Weather()
         # self.news = Aftonbladet()
@@ -58,6 +60,16 @@ class MOA:
         day = int(datetime.now().strftime('%d'))
         month = int(datetime.now().strftime('%m'))
         return f"{_week[weekday]} {day} {_month[month-1]}"
+
+    def convert_date_string(self, date:datetime) -> str:
+        """ Returns current date string: Fre 6 Jan """
+        _week = ['Mån','Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön']
+        _month = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
+        weekday = datetime.today().weekday()
+        day = int(datetime.now().strftime('%d'))
+        month = int(datetime.now().strftime('%m'))
+        return f"{_week[weekday]} {day} {_month[month-1]}"
+
 
 
     """ ### SL Traffic ### """
@@ -156,9 +168,39 @@ class MOA:
 
 
     """ ### FITBIT ### """
+    def __FITBIT__(self):
+        self.fitbit_list = self.set_sleep_summary()
+        self.fitbit_active = True
+        self.fitbit_refreshed = True
+
     def get_fitbit_auth(self) -> str:
         """ returns microsoft log in url for authentication """
         return self.fitbit.authorize()
+
+    def set_fitbit_auth(self, code:str) -> None:
+        self.fitbit.get_token(code)
+
+    def set_sleep_summary(self):
+        sleep_log = self.fitbit.get_sleep_summary()
+        if (len(sleep_log) != 0):
+            return sleep_log
+        else:
+            print("MOA had a problem with retrieving sleep log from fitbit")
+            return None
+            
+    def get_sleep(self):
+        return self.fitbit_list
+
+
+        """
+        4/4
+        4/4
+
+        4/4
+        3/4
+        0/2
+        15/18
+        """
     
 
 

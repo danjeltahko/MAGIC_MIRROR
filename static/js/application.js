@@ -26,7 +26,13 @@ $(document).ready(function(){
         document.querySelector('.todo').innerHTML = 
         `<h3>${to_do.name}</h3>
         ${to_do.tasks.map(task => `<p>${task}</p>`).join('')}`;
+    });
 
+    socket.on('fitbit', function(fitbit) {
+        document.querySelector('.container__fitbit').innerHTML = 
+        `<h1>Sömn</h1>
+        <h3>~${fitbit['summary']['hours']}h ${fitbit['summary']['minutes']}min</h3>
+        ${fitbit.data.map(sleep =>  `<h4>${sleep['day']} -> ${sleep['hours']}h ${sleep['minutes']}min</h4>`).join('')}`;
     });
 
 });

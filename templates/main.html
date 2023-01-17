@@ -14,26 +14,45 @@
 <body>
     <header></header>
     <main>
-        <div class="left__container">
+        <div class="container">
 
-            <h1 class="time"> {{ MOA.current_time }} </h1>
+            <div class="left__container">
+                
+                <div class="container__time">
+                    <h1 class="time"> {{ MOA.current_time }} </h1>
+                </div>
 
-            <h2 class="date"> {{ MOA.current_day }}</h2>
+                <div class="container__date">
+                    <h2 class="date"> {{ MOA.current_day }}</h2>
+                </div>
 
-            <div class="sl">
-                <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
-                {% for trip in MOA.sl_travel %}
-                    <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
-                {% endfor %}
+                <div class="sl">
+                    <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
+                    {% for trip in MOA.sl_travel %}
+                        <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="todo">
+                    <h3> {{ MOA.todo_list['name']}} </h3>
+                    {% for task in MOA.todo_list['tasks'] %}
+                        <p> {{ task }} </p>
+                    {% endfor %}
+                </div>
+                
             </div>
 
-            <div class="todo">
-                <h3> {{ MOA.todo_list['name']}} </h3>
-                {% for task in MOA.todo_list['tasks'] %}
-                    <p> {{ task }} </p>
-                {% endfor %}
+            <div class="right__container">
+
+                <div class="container__fitbit">
+                    <h1>Sömn</h1>
+                    <h3>~{{ MOA.fitbit_list['summary']['hours']}}h {{ MOA.fitbit_list['summary']['minutes']}}min </h3>
+                    {% for sleep in MOA.fitbit_list['data'] %}
+                        <h4>{{ sleep['day'] }} -> {{ sleep['hours'] }}h {{ sleep['minutes'] }}min</h4>
+                    {% endfor %}
+                </div>
             </div>
-            
+
         </div>
     </main>
     <footer></footer>

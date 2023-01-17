@@ -1,4 +1,54 @@
 body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: black;
     color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* LEFT SIDE */
+.left__container {
+    display: flex;
+    flex-direction: column;
+    max-width: 25%;
+}
+
+.container__time {
+    text-align: center;
+    width: 100%;
+    border: 1px solid white;
+}
+.container__date {
+    text-align: center;
+    width: 100%;
+    border: 1px solid white;
+}
+.sl {
+    text-align: center;
+    width: 100%;
+    border: 1px solid white;
+}
+.todo {
+    text-align: center;
+    width: 100%;
+    border: 1px solid white;
+}
+
+
+/* RIGHT SIDE */
+.right__container {
+    display: flex;
+    flex-direction: column;
+    max-width: 25%;
+}
+
+.container__fitbit {
+    text-align: center;
+    font-size: fit-width;
+    width: 100%;
+    border: 1px solid white;
 }

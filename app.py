@@ -103,7 +103,8 @@ def todo_list():
 def fitbit():
 
     if (MoA.fitbit_active):
-        return "Activated"
+        
+        return redirect("/user/")
 
     else:
         MoA.log_data(f"App Route /fitbit : Not activated, redirected to /login/fitbit")
@@ -158,7 +159,7 @@ def test_login_auth(application):
     # which in turn will redirect to our /getFitbitToken
     elif (application == 'fitbit'):
         auth_url = MoA.get_fitbit_auth()
-        MoA.log_data(f"App Route /login/todo : Redirecting to Fitbit for Authorization")
+        MoA.log_data(f"App Route /login/fitbit : Redirecting to Fitbit for Authorization")
         print("Redirecting to Fitbit for Authorization")
         return redirect(auth_url)
 
@@ -168,7 +169,7 @@ def test_login_auth(application):
         return render_template('404.html', data={"page": "Log in", "variable": application})
 
 @app.route("/getAzureToken/")
-def get_token():
+def get_todo_token():
 
     if (request.args.get('error')):
         MoA.log_data(f"App Route /getAzureToken/ : Authorized Failed! Could not receive token ")
@@ -191,9 +192,9 @@ def get_fitbit_token():
     else:
         code_token = request.args.get('code')
         MoA.log_data(f"App Route getFitbitToken/ : Authorized Successfully! Token received")
-        print("Authorized Successfully Token received in /getAzureToken/!!")
-        # MoA.set_auth(code_token)
-        # MoA.set_other_list("Inköpslista")
+        print("Authorized Successfully Token received in /getFitbitToken/!!")
+        MoA.set_fitbit_auth(code_token)
+        MoA.__FITBIT__()
 
     return redirect("/fitbit/")
 
@@ -293,6 +294,16 @@ def moa_thread():
                 socketio.emit('todo', refreshed_todo)
                 MoA.log_data(f"App Thread TODO : Updated Mirror because of time passed {MoA.todo_prev_time}-{current_time.strftime('%H:%M')}")
                 MoA.todo_prev_time = current_time.strftime("%H:%M")
+
+        """ FITBIT """
+        if (MoA.fitbit_active):
+
+            if (MoA.fitbit_refreshed):
+                print("Sends update to socket - inside FITBIT thread because of refresh")
+                socketio.emit('fitbit', MoA.fitbit_list)
+                MoA.fitbit_refreshed = False
+                MoA.log_data(f"App Thread FITBIT : Updated Mirror because of fitbit refresh")
+
 
         
 

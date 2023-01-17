@@ -1,4 +1,4 @@
-import webbrowser
+from datetime import datetime, timedelta
 from urllib import parse
 import requests
 import json
@@ -10,19 +10,18 @@ class Fitbit:
 
     def __init__(self) -> None:
 
-        self.client_id = FITBIT_CLIENT_ID
-        # inside url from authorization request
-        self.auth_code = None
+        self.header = {
+            "Authorization" : None,
+            "Accept": "application/json",
+            "Accept-Encoding": "gzip, deflate, br",
+            "connection":"keep-alive"
+        }
 
         self.user_id = None
         self.access_token = None
         self.refresh_token = None
         self.token_type = None
-
-        self.auth_url = "https://api.fitbit.com/oauth2/token"
-        self.header = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        self.expires_in = None
 
     def authorize(self) -> str:
         """ Create and return authorization url for Fitbit """
@@ -30,43 +29,45 @@ class Fitbit:
             "client_id": FITBIT_CLIENT_ID,
             "response_type": "code",
             "scope": "activity cardio_fitness electrocardiogram heartrate location nutrition oxygen_saturation profile respiratory_rate settings sleep social temperature weight",
-            "code_challenge": FITBIT_code_challenge,
+            "code_challenge": FITBIT_CODE_CHALLENGE,
             "code_challenge_method": "S256",
-            "state": FITBIT_state
-
+            "state": FITBIT_STATE
         }
+        print(f"Creating URL for fitbit")
         return f"https://www.fitbit.com/oauth2/authorize?{parse.urlencode(params)}"
 
-    def open_browser(self):
-        # can we do this to flask/django page? 127.0.0.1:1312/token/ ?? extract it directly
-        url = f"state={FITBIT_state}"
-        webbrowser.open(url)
-        self.auth_code = str(input("Auth code -> "))
-
-    def get_token(self):
+    def get_token(self, code:str):
+        """ Gets access token from fitbit """
+        URL = "https://api.fitbit.com/oauth2/token"
         data = {
             "grant_type": "authorization_code",
             "client_id": FITBIT_CLIENT_ID,
-            "code": self.auth_code,
-            "code_verifier": FITBIT_code_verifier
+            "code": code,
+            "code_verifier": FITBIT_CODE_VERIFIER
         }
-        response = requests.post(self.auth_url, data=data, headers=self.header)
-        print(response)
+        response = requests.post(URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
+        print(f"Received code from redirected URI\n-> {code}")
+        print(f"Response: {response.status_code}\nData: {response.text}")
         if (response.status_code == 200):
             load = json.loads(response.text)
             self.user_id = load["user_id"]
             self.access_token = load["access_token"]
             self.refresh_token = load["refresh_token"]
             self.token_type = load["token_type"]
-        #print(response.text)
+            self.authorization = self.token_type + " " + self.access_token
+            self.header["Authorization"] = self.authorization
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+        else:
+            print("Failed to retrive access token...")
 
     def refreshing_token(self):
         data = {
             "grant_type": "refresh_token",
-            "client_id": self.client_id,
+            "client_id": FITBIT_CLIENT_ID,
             "refresh_token": self.refresh_token
         }
-        response = requests.post(self.auth_url, data=data, headers=self.header)
+        URL = "https://www.fitbit.com/oauth2/authorize"
+        response = requests.post(URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
         print(response)
         if (response.status_code == 200):
             load = json.loads(response.text)
@@ -74,7 +75,8 @@ class Fitbit:
             self.access_token = load["access_token"]
             self.refresh_token = load["refresh_token"]
             self.token_type = load["token_type"]
-        #print(response.text)
+        else:
+            print("Failed to retrive refreshed access token...")
 
 
     def access_user_data(self):
@@ -88,40 +90,79 @@ class Fitbit:
         #print(response.text)
 
     def get_sleep_log(self):
+
         url = f"https://api.fitbit.com/1.2/user/{self.user_id}/sleep/list.json"
-        authorization = self.token_type + " " + self.access_token
-        header = {
-            "Authorization" : authorization,
-            "accept": "application/json"
-        }
+        past_week = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
         parameters = {
-            "afterDate": "2022-12-26",
+            "afterDate": past_week,
             "sort": "desc",
             "limit": "100",
             "offset": "0"
         }
-        response = requests.get(url, params=parameters, headers=header)
-        print(response)
-        print(response.text)
+        response = requests.get(url, params=parameters, headers=self.header)
+        if (response.status_code == 200):
+            data = json.loads(response.text)
+            return data
+        else:
+            return None
 
-    
-    def run(self):
+    def get_sleep_summary(self):
+        """ 
+            adds past weeks sleep data as dictionary in list 
+            with startdate & enddate and also summary.
+            * adds an average dictionary at det end
+        """
+        data = self.get_sleep_log()
+        if (data != None):
+            sleep_data = []
+            total_minutes = 0
+            for sleep in data["sleep"]:
 
-        # open url to extract authorization code from request url
-        print("\nOpen url to login and choose scopes, extract code from redirected url")
-        self.open_browser()
-        print("\n* GET TOKEN")
-        self.get_token()
-        print("\n* GET USER DATA")
-        #self.access_user_data()
-        #if (404):
-        #    self.refreshing_token()
-        self.get_sleep_log()
+                summary = sleep["levels"]["summary"]
+                # if deep,light or rem even exists
+                if ("deep" in summary):
+                    deep_sleep = summary["deep"]["minutes"]
+                if ("light" in summary):
+                    light_sleep = summary["light"]["minutes"]
+                if ("rem" in summary):
+                    rem_sleep = summary["rem"]["minutes"]
+
+                start_time = sleep["startTime"]
+                end_time = sleep["endTime"]
+                # takes date(2023-01-17T01:47:00.000), converting to datetime(2023-01-17), getting weekday index & gets that value in list
+                day = ['Mån','Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'][datetime.strptime(start_time.split('T')[0], "%Y-%m-%d").weekday()]
+                total_sleep = sleep["minutesAsleep"]
+                total_minutes += total_sleep
+
+                sleep_summary = {
+                    "start": start_time,
+                    "end": end_time,
+                    "day": day,
+                    "hours": int(total_sleep/60),
+                    "minutes": total_sleep % 60,
+                    "deep": deep_sleep,
+                    "light": light_sleep,
+                    "rem": rem_sleep
+                }
+                sleep_data.append(sleep_summary)
+
+            avg_sleep = int(total_minutes/len(data["sleep"]))
+            fitbit_sleep = {"summary": {"hours": int(avg_sleep/60),"minutes": avg_sleep % 60},
+                            "data": sleep_data}
+
+            return fitbit_sleep
+        else:
+            print("Could not retrieve sleep log")
+            return []
+
+
+
+
+        
 
 
 if __name__ == "__main__":
     fitbit = Fitbit()
-    fitbit.run()
 
 
 
