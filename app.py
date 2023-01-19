@@ -201,22 +201,23 @@ def get_fitbit_token():
 
     return redirect("/fitbit/")
 
+@app.route("/weather/")
+def weather():
+    current_weather = MoA.set_current_weather()
+    return render_template("weather_test.html", weather=MoA)
+
 
 @app.route('/testing')
 def weather_test():
-    current_weather = MOA.get_weather()
-    forecast = MOA.get_forecast_today()
+    current_weather = MoA.get_weather()
+    forecast = MoA.get_forecast_today()
     return render_template('weather.html', current_weather=current_weather, today=forecast)
 
 @app.route('/m-m')
 def magic_mirror():
-    trains = MOA.get_trains()
-    forecast = MOA.get_forecast()
+    trains = MoA.get_travel()
+    forecast = MoA.get_forecast()
     return render_template('magic_mirror.html', trains=trains, forecast=forecast)
-
-@app.route('/hue-lights')
-def adjust_lights():
-    return render_template('lights.html')
 
 
 # Event Decoration 
@@ -248,6 +249,10 @@ def moa_thread():
         if (MoA.current_time != current_time.strftime("%H:%M:%S")):
             socketio.emit('time', current_time.strftime('%H:%M:%S'))
             MoA.current_time = current_time.strftime("%H:%M:%S")
+            if (MoA.weather_time != current_time.strftime("%H:%M")):
+                MoA.weather_refresh = True
+                MoA.weather_time = current_time.strftime("%H:%M")
+
 
         """ DATE """
         #  Gets & sets current date and updates page with new date
@@ -284,7 +289,10 @@ def moa_thread():
 
         """ TODO """
         if (MoA.todo_active):
-            
+
+            if (MoA.todo_expires <= datetime.now()):
+                MoA.refresh_auth_token()
+
             if (MoA.todo_refreshed):
                 print("Sends update to socket - inside TODO thread because of refresh")
                 socketio.emit('todo', MoA.todo_list)
@@ -307,7 +315,11 @@ def moa_thread():
                 MoA.fitbit_refreshed = False
                 MoA.log_data(f"App Thread FITBIT : Updated Mirror because of fitbit refresh")
 
-
+        """ WEATHER """
+        if (MoA.weather_refresh):
+            new_current_weather = MoA.set_current_weather()
+            print("New weather set")
+            MoA.weather_refresh = False
         
 
 

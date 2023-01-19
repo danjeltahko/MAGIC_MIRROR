@@ -22,12 +22,23 @@ class MOA:
         self.sl_new = False
         self.__SL__(self.last_from_station, self.last_tooo_station)
 
+        # Weather init
+        self.weather = Weather()
+        self.weather_location = "Vällingby"
+        self.weather_current = {}
+        self.weather_forecast = []
+        self.weather_refresh = False
+        self.weather_time = "00:00:00"
+        self.__WEATHER__(self.weather_location)
+
+
         # ToDo init
         self.todo = ToDo()
         self.todo_list = {"name": "No Data Available"}
         self.todo_active = False
         self.todo_refreshed = False
         self.todo_prev_time = "00:00"
+        self.todo_expires = None
 
         # Fitbit init
         self.fitbit = Fitbit()
@@ -35,7 +46,8 @@ class MOA:
         self.fitbit_active = False
         self.fitbit_refreshed = False
 
-        # self.weather = Weather()
+
+
         # self.news = Aftonbladet()
         # self.hue = Hue()
 
@@ -60,16 +72,6 @@ class MOA:
         day = int(datetime.now().strftime('%d'))
         month = int(datetime.now().strftime('%m'))
         return f"{_week[weekday]} {day} {_month[month-1]}"
-
-    def convert_date_string(self, date:datetime) -> str:
-        """ Returns current date string: Fre 6 Jan """
-        _week = ['Mån','Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön']
-        _month = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
-        weekday = datetime.today().weekday()
-        day = int(datetime.now().strftime('%d'))
-        month = int(datetime.now().strftime('%m'))
-        return f"{_week[weekday]} {day} {_month[month-1]}"
-
 
 
     """ ### SL Traffic ### """
@@ -130,6 +132,7 @@ class MOA:
         """ When access token is received, set standard list, timestamp & activate"""
         self.set_other_list("Inköpslista")
         self.todo_prev_time = self.get_current_time().strftime("%H:%M")
+        self.todo_expires = self.todo.expires_in
         self.todo_active = True
         self.todo_refreshed = True
 
@@ -144,6 +147,7 @@ class MOA:
     def refresh_auth_token(self) -> None:
         """ refreshing authorization token """
         self.todo.refresh_get_token()
+        self.todo_expires = self.todo.expires_in
 
     def set_other_list(self, user_input:str) -> None:
         print("Sets new list inside (set_other_list)")
@@ -191,24 +195,32 @@ class MOA:
     def get_sleep(self):
         return self.fitbit_list
 
-    
-
-
-
-
-
-
-
-
-
-
-
-    def get_news(self):
-        return self.news.testing()
 
     """     Weather     """
-    def set_location(self, location):
-        self.weather.get_geocoding(location)
+    def __WEATHER__(self, city:str):
+        self.set_weather_new_location(city)
+        self.weather_current = self.set_current_weather()
+
+    def set_weather_new_location(self, city:str):
+        self.weather_location = city
+        self.weather.set_location(city)
+
+    def set_current_weather(self) -> dict:
+        current_weather = self.weather.set_current()
+        if (current_weather != None):
+            self.weather_current = self.weather.set_current()
+            print("New Weather data is set")
+            return self.weather_current
+        else:
+            self.log_data("MOA WEATHER: ERROR - current_weather returned None")
+            return {"temperature": "Error"}
+
+    def get_current_weather(self):
+        return self.weather_current
+
+    def get_forecast_weather(self):
+        return self.weather_forecast
+
 
     def get_forecast(self):
         self.weather.forecast = self.weather.set_forecast()
@@ -225,10 +237,8 @@ class MOA:
         self.weather.current_temp = self.weather.set_current_weather()
         return self.weather.current_temp
 
-    def convert_datetime_str(self, dt:datetime) -> str:
-        dt_str = dt.strftime("%H:%M:%S")
-        return dt_str
 
+    """ LOG DATA """
     def log_data(self, data:str) -> None:
         with open("log/logged.txt", "a") as file:
             dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")

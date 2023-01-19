@@ -27,30 +27,56 @@
                 </div>
 
                 <div class="sl">
-                    <h3>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h3>
+                    <h5>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h5>
                     {% for trip in MOA.sl_travel %}
                         <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
                     {% endfor %}
                 </div>
 
                 <div class="todo">
-                    <h3> {{ MOA.todo_list['name']}} </h3>
-                    {% for task in MOA.todo_list['tasks'] %}
-                        <p> {{ task }} </p>
-                    {% endfor %}
+                    <ul class="todo__list">
+                        <h4> {{ MOA.todo_list['name']}} </h4>
+                        {% for task in MOA.todo_list['tasks'] %}
+                        <li> {{ task }} </li>
+                        {% endfor %}
+                    </ul>
+
                 </div>
                 
             </div>
 
             <div class="right__container">
 
+                <div class="container__weather">
+
+                    <div class="weather__current">
+    
+                        <div class="weather__description">
+                            <div class="weather__icon__container">
+                                <img class="weather__icon" src="{{MOA.weather_current.icon}}" alt="weather_icon">
+                            </div>
+                            <h4>{{MOA.weather_current.description}}</h4>
+                        </div>
+    
+                        <div class="weather__description">
+                            <h1 class="weather__temperature">{{MOA.weather_current.temperature}}</h1>
+                            <h4>Känns som {{MOA.weather_current.feels_like}}</h4>
+                        </div>
+    
+                    </div>
+    
+                    <p> Moln        : {{MOA.weather_current.clouds}} </p>
+                    <p> Vind        : {{MOA.weather_current.wind}} </p>
+
+                </div>
+
                 <div class="container__fitbit">
-                    <h1>Sömn</h1>
-                    <h3>~{{ MOA.fitbit_list['summary']['hours']}}h {{ MOA.fitbit_list['summary']['minutes']}}min </h3>
+                    <h4>Sömn: ~{{ MOA.fitbit_list['summary']['hours']}}h {{ MOA.fitbit_list['summary']['minutes']}}min </h4>
                     {% for sleep in MOA.fitbit_list['data'] %}
-                        <h4>{{ sleep['day'] }} -> {{ sleep['hours'] }}h {{ sleep['minutes'] }}min</h4>
+                        <p class="sleep">{{ sleep['day'] }} -> {{ sleep['hours'] }}h {{ sleep['minutes'] }}min</p>
                     {% endfor %}
                 </div>
+
             </div>
 
         </div>

@@ -19,23 +19,29 @@ body {
 
 .container__time {
     text-align: center;
-    width: 100%;
     border: 1px solid white;
+    font-size: 2.5vw;
 }
+
+
 .container__date {
     text-align: center;
-    width: 100%;
     border: 1px solid white;
+    font-size: 2.5vw;
 }
+
 .sl {
     text-align: center;
-    width: 100%;
     border: 1px solid white;
+    font-size: 2.5vw;
 }
 .todo {
     text-align: center;
-    width: 100%;
     border: 1px solid white;
+    font-size: 2.5vw;
+}
+.todo__list {
+    text-align: left;
 }
 
 
@@ -48,7 +54,37 @@ body {
 
 .container__fitbit {
     text-align: center;
-    font-size: fit-width;
-    width: 100%;
+    font-size: 2.5vw;
     border: 1px solid white;
 }
+.sleep {
+    text-align: left;
+    padding-left: 10%;
+}
+
+
+.container__weather {
+    text-align: center;
+    border: 1px solid rgb(223, 140, 140);
+    font-size: 2.5vw;
+}
+
+.weather__current {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.weather__description {
+    text-align: center;
+    font-size: 2.5vw;
+    margin-top: 0.25em;
+}
+
+/* .weather__icon {
+    width: 10.5em;
+}
+
+.weather__temperature {
+    font-size: large;
+} */

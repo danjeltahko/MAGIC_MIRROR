@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/magic_mirror_style.css">
+    <title>Test Weather</title>
+</head>
+<body>
+    <h1>Testing</h1>
+
+    <div class="container">
+
+        <div class="left__container">
+            <h1>left side </h1>
+        </div>
+
+        <div class="right__container">
+
+            <div class="container__weather">
+
+                <div class="weather__current">
+
+                    <div class="weather__description">
+                        <div class="weather__icon__container">
+                            <img class="weather__icon" src="{{weather.weather_current.icon}}" alt="weather_icon">
+                        </div>
+                        <h4>{{weather.weather_current.description}}</h4>
+                    </div>
+
+                    <div class="weather__description">
+                        <h1 class="weather__temperature">{{weather.weather_current.temperature}}</h1>
+                        <h4>Känns som {{weather.weather_current.feels_like}}</h4>
+                    </div>
+
+                </div>
+
+                <h1> Moln        : {{weather.weather_current.clouds}} </h1>
+                <h1> Vind        : {{weather.weather_current.wind}} </h1>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
