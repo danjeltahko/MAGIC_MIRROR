@@ -90,6 +90,9 @@ class SL:
             else:
                 color = "red"
 
+        elif (category == "TRM"):
+            color = "orange"
+
         else:
             color = "grey"
 
@@ -117,8 +120,8 @@ class SL:
         self.travel_trips = []
         # error handling
         if (response.status_code == 200):
-            # with open("SL.json", "w") as file:
-            #     file.write(response.text)
+            with open("SL.json", "w") as file:
+                file.write(response.text)
             data = json.loads(response.text)
             # loops through every departure
             try:

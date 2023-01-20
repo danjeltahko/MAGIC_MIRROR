@@ -146,7 +146,6 @@ class ToDo:
         except:
             print("Could not create new task to list")
 
-
     def delete_tasks_thread(self, completes_tasks) -> None:
 
         for task in completes_tasks:

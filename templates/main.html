@@ -26,10 +26,20 @@
                     <h2 class="date"> {{ MOA.current_day }}</h2>
                 </div>
 
-                <div class="sl">
-                    <h5>{{ MOA.sl_travel[0].origin_name }} -> {{ MOA.sl_travel[0].destin_name }} </h5>
+                <div class="container__sl">
+                    <h5 class="sl__header">{{ MOA.sl_travel[0].origin_name }} → {{ MOA.sl_travel[0].destin_name }} </h5>
+                    <div class="sl__break"></div>
                     {% for trip in MOA.sl_travel %}
-                        <p> {{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
+                        <div class="sl__time__container">
+                            <p class="sl__time"> {{ trip.origin_time[9:14] }} ‣ {{ trip.destin_time[9:14] }}</p>
+                            <p class="sl__time"> {{ trip.total_time }}</p>
+                        </div>
+                        <div class="sl__transport__container">
+                            {% for transport in trip.transports %}
+                                <p class="sl__icon {{transport.color}}">{{ transport.line }}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="sl__break"></div>
                     {% endfor %}
                 </div>
 
@@ -49,24 +59,41 @@
 
                 <div class="container__weather">
 
-                    <div class="weather__current">
-    
-                        <div class="weather__description">
-                            <div class="weather__icon__container">
-                                <img class="weather__icon" src="{{MOA.weather_current.icon}}" alt="weather_icon">
+                    <div class="container__weather__current">
+                        <div class="container__weather__current_top">
+                            <div class="container__weather__icon">
+                                <img class="weather__current__icon" src="{{MOA.weather_current.icon}}" alt="weather_icon">
                             </div>
-                            <h4>{{MOA.weather_current.description}}</h4>
+                            <h1 class="weather__current__temperature">{{MOA.weather_current.temperature}}</h1>
                         </div>
-    
-                        <div class="weather__description">
-                            <h1 class="weather__temperature">{{MOA.weather_current.temperature}}</h1>
-                            <h4>Känns som {{MOA.weather_current.feels_like}}</h4>
+
+                        <div class="header__breaker"></div>
+ 
+                        <div class="container__weather__current_bot">
+                            <h5 class="weather__description">{{MOA.weather_current.description}}</h5>
+                            <p class="weather__feels_like">Känns som {{MOA.weather_current.feels_like}}</p>
+                            <div class="sub__weather_description">
+                                <p>M : {{MOA.weather_current.clouds}}</p>
+                                <div class="row_break"></div>
+                                <p>V : {{MOA.weather_current.wind}}</p>
+                            </div>
                         </div>
-    
+                    </div>
+
+                    <div class="container__weather__forecast">
+                        <div class="container__weather__forecast_hours">
+
+                            {% for forecast in MOA.weather_forecast %}
+                            <div class="weather__forecast_hour">
+                                <img class="weather__forecast__icon" src="{{forecast.icon}}" alt="weather_icon">
+                                <p class="weather__forecast__temperature">{{forecast.temperature}}</p>
+                                <p class="weather__forecast__time">{{forecast.dt[8:-3]}}</p>
+                            </div>
+                            <div class="row_break_forecast"></div>
+                            {% endfor %}
+                        </div>
                     </div>
     
-                    <p> Moln        : {{MOA.weather_current.clouds}} </p>
-                    <p> Vind        : {{MOA.weather_current.wind}} </p>
 
                 </div>
 

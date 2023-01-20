@@ -20,21 +20,72 @@ body {
 .container__time {
     text-align: center;
     border: 1px solid white;
-    font-size: 2.5vw;
+    font-size: 2.7vw;
+}
+.time, .date {
+    
+    margin: 1vw 0 1vw 0;
 }
 
 
 .container__date {
     text-align: center;
     border: 1px solid white;
-    font-size: 2.5vw;
+    font-size: 3vw;
 }
 
-.sl {
-    text-align: center;
+.container__sl {
     border: 1px solid white;
-    font-size: 2.5vw;
 }
+.sl__break {
+    height: 0.1vw;
+    background-color: white;
+    margin: 1vw;
+}
+.sl__header {
+    text-align: center;
+    font-size: 2.5vw;
+    margin: 2vw 0 2vw 0;
+}
+.sl__time__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.sl__time {
+    font-size: 1.7vw;
+    padding: 0 1vw 0 1vw;
+    margin: 0;
+}
+.sl__transport__container {
+    /* justify-content: center; */
+    display: flex;
+    flex-direction: row;
+}
+.sl__icon {
+    margin: 1vw;
+    padding: 1vw;
+    border-radius: 15px;
+}
+.pink {
+    background-color: #CD407F;
+}
+.red {
+    background-color: #D71D24;
+}
+.green {
+    background-color: #168541;
+}
+.blue {
+    background-color: #027DB8;
+}
+.orange {
+    background-color: #B6601E;
+}
+.grey {
+    background-color: #787D73;
+}
+
 .todo {
     text-align: center;
     border: 1px solid white;
@@ -62,29 +113,90 @@ body {
     padding-left: 10%;
 }
 
-
+/* Weather */
 .container__weather {
     text-align: center;
-    border: 1px solid rgb(223, 140, 140);
+    border: 1px solid white;
     font-size: 2.5vw;
 }
-
-.weather__current {
+.container__weather__current {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+}
+.container__weather__current_top {
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: center;
+}
+.weather__current__icon {
+    width: 10vw;
+    padding: 5px;
+}
+.weather__current__temperature {
+    font-size: 10vw;
+    padding: 5px;
+    margin: 0;
+}
+
+.container__weather__current_bot {
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
 }
 
 .weather__description {
-    text-align: center;
     font-size: 2.5vw;
-    margin-top: 0.25em;
+    margin: 15px 0px 10px 0px;
+
+    /* padding: 5; */
+}
+.weather__feels_like {
+    margin: 0px;
+    font-size: 2vw
+}
+.sub__weather_description {
+    display: flex;
+    flex-direction: row;
 }
 
-/* .weather__icon {
-    width: 10.5em;
+.row_break {
+    margin: 2vw 1vw 2vw 1vw;
+    width: 0.2vw;
+    background-color: white;
+}
+.row_break_forecast {
+    margin: 1vw 0.1vw 0vw 0.1vw;
+    width: 0.2vw;
+    background-color: white;
 }
 
-.weather__temperature {
-    font-size: large;
-} */
+.container__weather__forecast_hours {
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    margin: 0vw 0vw 1.5vw 0vw;
+}
+.weather__forecast_hour {
+    /* margin: 0.4vw; */
+    padding: 0.4vw;
+}
+.weather__forecast__temperature,
+.weather__forecast__time {
+    text-align: center;
+    font-size: 2vw;
+    margin: 0;
+}
+.weather__forecast__icon {
+    /* align-items: center; */
+
+    width: 5vw;
+}
+
+
+
+.header__breaker {
+    height: 2px;
+    background-color: white;
+}

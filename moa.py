@@ -200,6 +200,7 @@ class MOA:
     def __WEATHER__(self, city:str):
         self.set_weather_new_location(city)
         self.weather_current = self.set_current_weather()
+        self.weather_forecast = self.set_forecast_weather()
 
     def set_weather_new_location(self, city:str):
         self.weather_location = city
@@ -208,11 +209,21 @@ class MOA:
     def set_current_weather(self) -> dict:
         current_weather = self.weather.set_current()
         if (current_weather != None):
-            self.weather_current = self.weather.set_current()
+            self.weather_current = current_weather
             print("New Weather data is set")
             return self.weather_current
         else:
             self.log_data("MOA WEATHER: ERROR - current_weather returned None")
+            return {"temperature": "Error"}
+
+    def set_forecast_weather(self) -> list:
+        forecast_weather = self.weather.set_forecast()
+        if (forecast_weather != None):
+            self.weather_forecast = forecast_weather[:4]
+            print("New forecast is set")
+            return self.weather_forecast
+        else:
+            self.log_data("MOA WEATHER: ERROR - forecast_weater returned None")
             return {"temperature": "Error"}
 
     def get_current_weather(self):
@@ -221,21 +232,6 @@ class MOA:
     def get_forecast_weather(self):
         return self.weather_forecast
 
-
-    def get_forecast(self):
-        self.weather.forecast = self.weather.set_forecast()
-        return self.weather.forecast
-    
-    def get_forecast_today(self):
-        today_weather = []
-        array = self.weather.set_forecast()
-        for i in range(7):
-            today_weather.append(array[i])
-        return today_weather
-
-    def get_weather(self):
-        self.weather.current_temp = self.weather.set_current_weather()
-        return self.weather.current_temp
 
 
     """ LOG DATA """

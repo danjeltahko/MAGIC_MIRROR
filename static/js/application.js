@@ -16,10 +16,22 @@ $(document).ready(function(){
 
     // receive SL from MOA
     socket.on('sl', function(SL) {
-        var sl_travel = SL;
-        document.querySelector('.sl').innerHTML = 
-      `<h5>${sl_travel[0].origin_name} -> ${sl_travel[0].destin_name}</h5>
-       ${sl_travel.map(trip => `<p>${trip.origin_time.substring(9, 14)} -> ${trip.destin_time.substring(9, 14)}</p>`).join('')}`;
+        document.querySelector('.container__sl').innerHTML =
+        `
+        <h5 class="sl__header">${SL[0].origin_name} → ${SL[0].destin_name} </h5>
+        <div class="sl__break"></div>
+            ${SL.map(trip =>`
+            <div class="sl__time__container">
+                <p class="sl__time">${trip.origin_time.substring(9, 14)} ‣ ${trip.destin_time.substring(9, 14)}</p>
+                <p class="sl__time">${trip.total_time}</p>
+            </div>
+            <div class="sl__transport__container">
+                ${trip.transports.map(transport =>`
+                <p class="sl__icon ${transport.color}">${transport.line}</p>
+                `).join('')}
+            </div>
+            <div class="sl__break"></div>
+            `).join('')}`;
     });
 
     socket.on('todo', function(to_do) {
@@ -36,4 +48,36 @@ $(document).ready(function(){
         ${fitbit.data.map(sleep =>  `<p>${sleep['day']} -> ${sleep['hours']}h ${sleep['minutes']}min</p>`).join('')}`;
     });
 
+    socket.on('weather_current', function(weather_current) {
+        document.querySelector('.container__weather__current').innerHTML =
+        `<div class="container__weather__current_top">
+            <div class="container__weather__icon">
+                <img class="weather__current__icon" src="${weather_current.icon}" alt="weather_icon">
+            </div>
+            <h1 class="weather__current__temperature">${weather_current.temperature}</h1>
+        </div>
+        <div class="header__breaker"></div>
+        <div class="container__weather__current_bot">
+            <h5 class="weather__description">${weather_current.description}</h5>
+            <p class="weather__feels_like">Känns som ${weather_current.feels_like}</p>
+            <div class="sub__weather_description">
+                <p>${weather_current.clouds}</p>
+                <p>${weather_current.wind}</p>
+            </div>
+        </div>`;
+    })
+
+    socket.on('weather_forecast', function(weather_forecast) {
+        document.querySelector('.container__weather__forecast').innerHTML =
+        `<div class="container__weather__forecast_hours">
+            ${weather_forecast.map(forecast => `
+            <div class="weather__forecast_hour">
+                <img class="weather__forecast__icon" src="${forecast.icon}" alt="weather_icon">
+                <p class="weather__forecast__temperature">${forecast.temperature}</p>
+                <p class="weather__forecast__time">${forecast.dt.substring(9, 14)}</p>
+            </div>
+            <div class="row_break_forecast"></div>`).join('')}
+        </div>`;
+    })
+    
 });
