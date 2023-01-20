@@ -55,6 +55,17 @@ class SL:
         self.legs = []
         self.total_t = None
 
+    def convert_datetime(self, date:str, time:str) -> datetime:
+        year = date[2:4]
+        month = date[5:7]
+        day = date[8:10]
+        date_time = f"{month}-{day}-{year} {time}"
+        converted_date = datetime.strptime(date_time, "%m-%d-%y %H:%M:%S")
+        return converted_date
+
+    def create_transport_icon(self, product:dict) -> dict:
+        pass
+
     def set_trip(self) -> list:
         travel_url = f"https://api.sl.se/api2/TravelplannerV3_1/trip.json?key={SL_TRAVEL_KEY}"
         dt = (datetime.now() + timedelta(minutes=2)).strftime("%H:%M")
@@ -71,6 +82,8 @@ class SL:
         self.travel_trips = []
         # error handling
         if (response.status_code == 200):
+            # with open("SL.json", "w") as file:
+            #     file.write(response.text)
             data = json.loads(response.text)
             # loops through every departure
             try:
@@ -88,21 +101,18 @@ class SL:
                         # if first transport in trip, set origin as origin
                         if (trip == trip_data["LegList"]["Leg"][0]):
                             self.origin = origin_name
-                            trip_year = trip['Origin']['date'][2:4]
-                            trip_month = trip['Origin']['date'][5:7]
-                            trip_day = trip['Origin']['date'][8:10]
-                            time_date = f"{trip_month}-{trip_day}-{trip_year} {trip['Origin']['time']}"
-                            self.origin_t = datetime.strptime(time_date, "%m-%d-%y %H:%M:%S")
+                            self.origin_t = self.convert_datetime(trip['Origin']['date'], trip['Origin']['time'])
                         
                         # if last transport in trip, set destination as destination
                         if (trip == trip_data["LegList"]["Leg"][-1]):
                             self.destin = destin_name
-                            trip_year = trip['Destination']['date'][2:4]
-                            trip_month = trip['Destination']['date'][5:7]
-                            trip_day = trip['Destination']['date'][8:10]
-                            time_date = f"{trip_month}-{trip_day}-{trip_year} {trip['Destination']['time']}"
-                            self.destin_t = datetime.strptime(time_date, "%m-%d-%y %H:%M:%S")
-                            self.total_t = str(self.destin_t - self.origin_t)
+                            self.destin_t = self.convert_datetime(trip['Destination']['date'], trip['Destination']['time'])
+                            total_time = str(self.destin_t - self.origin_t)
+                            if (total_time[0] == '0'):
+                                self.total_t = f"{total_time[2:4]} min"
+                            else:
+                                self.total_t = f"{total_time[:4]} tim"
+
 
                         # if transport changes necessary for trip, append stops in legs list
                         else:
