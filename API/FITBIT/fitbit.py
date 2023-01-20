@@ -130,7 +130,7 @@ class Fitbit:
                 start_time = sleep["startTime"]
                 end_time = sleep["endTime"]
                 # takes date(2023-01-17T01:47:00.000), converting to datetime(2023-01-17), getting weekday index & gets that value in list
-                day = ['Mån','Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'][datetime.strptime(start_time.split('T')[0], "%Y-%m-%d").weekday()]
+                day = ['Måndag','Tisdag', 'Onsdag', 'Tordag', 'Fredag', 'Lördag', 'Söndag'][datetime.strptime(start_time.split('T')[0], "%Y-%m-%d").weekday()]
                 total_sleep = sleep["minutesAsleep"]
                 total_minutes += total_sleep
 
@@ -140,6 +140,7 @@ class Fitbit:
                     "day": day,
                     "hours": int(total_sleep/60),
                     "minutes": total_sleep % 60,
+                    "total_minutes" : total_sleep,
                     "deep": deep_sleep,
                     "light": light_sleep,
                     "rem": rem_sleep
@@ -147,13 +148,12 @@ class Fitbit:
                 sleep_data.append(sleep_summary)
 
             avg_sleep = int(total_minutes/len(data["sleep"]))
-            fitbit_sleep = {"summary": {"hours": int(avg_sleep/60),"minutes": avg_sleep % 60},
-                            "data": sleep_data}
+            fitbit_sleep = {"summary": f"Sömn: ~{int(avg_sleep/60)}h {avg_sleep % 60}min", "data": sleep_data}
 
             return fitbit_sleep
         else:
             print("Could not retrieve sleep log")
-            return []
+            return {"summary": "Error", "data": ["Could not retrieve sleep log"]}
 
 
 

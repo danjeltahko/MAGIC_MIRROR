@@ -86,7 +86,7 @@ class Weather:
         # Add data to new dictionary 
         weather_object = {
             "temperature": f"{int(_weather['main']['temp'])}°",
-            "description": '&'.join(weather_description),
+            "description": " & ".join(weather_description),
             "icon": f"http://openweathermap.org/img/w/{_weather['weather'][0]['icon']}.png",
             "feels_like": f"{int(_weather['main']['feels_like'])}°",
             "dt": datetime.datetime.strftime(datetime.datetime.fromtimestamp(_weather['dt']), "%m-%d-%y %H:%M:%S"),

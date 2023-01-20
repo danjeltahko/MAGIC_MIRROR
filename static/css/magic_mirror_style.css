@@ -8,9 +8,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
 }
-
-/* LEFT SIDE */
-.left__container {
+.left__container, .right__container{
     display: flex;
     flex-direction: column;
     max-width: 25%;
@@ -96,21 +94,65 @@ body {
 }
 
 
-/* RIGHT SIDE */
-.right__container {
-    display: flex;
-    flex-direction: column;
-    max-width: 25%;
-}
-
-.container__fitbit {
+/* FITBIT */
+.fitbit__summary {
     text-align: center;
     font-size: 2.5vw;
-    border: 1px solid white;
+    margin: 1vw 0 0 0;
 }
-.sleep {
-    text-align: left;
-    padding-left: 10%;
+.fitbit__total_sleep__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.fitbit__total_sleep_date {
+    display: flex;
+    flex-direction: column;
+}
+.fitbit__total_sleep_day {
+    font-size: 2.5vw;
+    padding-left: 1vw;
+    margin: 0;
+}
+.fitbit__total_sleep_time {
+    font-size: 1.5vw;
+    padding-left: 1vw;
+    margin: 0;
+}
+.fitbit__total_sleep_summary {
+    display: flex;
+    align-items: center;
+    font-size: 3vw;
+    padding-right: 1vw;
+    margin: 0;
+}
+.fitbit__sleep_bar__container {
+    margin: 0 1vw;
+}
+.fitbit__sleep_bar {
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1vw 0;
+}
+.fitbit__sleep_bar_light {
+    background-color: #006400;
+    text-align:center;
+    font-size:1vw;
+    padding: 0.5vw 0;
+}
+.fitbit__sleep_bar_deep {
+    background-color: #000080;
+    text-align:center;
+    font-size:1vw;
+    padding: 0.5vw 0;
+}
+.fitbit__sleep_bar_rem {
+    background-color: #660066;
+    text-align:center;
+    font-size:1vw;
+    padding: 0.5vw 0;
 }
 
 /* Weather */

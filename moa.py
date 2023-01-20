@@ -42,7 +42,7 @@ class MOA:
 
         # Fitbit init
         self.fitbit = Fitbit()
-        self.fitbit_list = {"summary": {"hours": 0,"minutes": 0}}
+        self.fitbit_list = {"summary": "Fitbit"}
         self.fitbit_active = False
         self.fitbit_refreshed = False
 

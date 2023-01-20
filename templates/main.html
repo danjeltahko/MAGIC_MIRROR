@@ -102,11 +102,38 @@
                 </div>
 
                 <div class="container__fitbit">
-                    <h4>Sömn: ~{{ MOA.fitbit_list['summary']['hours']}}h {{ MOA.fitbit_list['summary']['minutes']}}min </h4>
+                    {% if MOA.fitbit_active %}
+                    <h4 class="fitbit__summary">{{ MOA.fitbit_list['summary']}}</h4>
+                    <div class="sl__break"></div>
                     {% for sleep in MOA.fitbit_list['data'] %}
-                        <p class="sleep">{{ sleep['day'] }} -> {{ sleep['hours'] }}h {{ sleep['minutes'] }}min</p>
+                        <div class="fitbit__total_sleep__container">
+                            <div class="fitbit__total_sleep_date" style="display: flex; flex-direction: column;">
+                                <p class="fitbit__total_sleep_day">{{ sleep['day'] }}</p>
+                                <p class="fitbit__total_sleep_time">{{ sleep.start[11:16] }}‣{{ sleep.end[11:16] }}</p>
+                            </div>
+                            <p class="fitbit__total_sleep_summary">{{ sleep['hours'] }}h {{ sleep['minutes'] }}min</p>
+                        </div>
+                        <div class="fitbit__sleep_bar__container">
+                            <div class="fitbit__sleep_bar">
+                                <div class="fitbit__sleep_bar_light" style="width: {{(sleep.light/sleep.total_minutes)*100}}%;">light</div>
+                                <div class="fitbit__sleep_bar_deep" style="width: {{(sleep.deep/sleep.total_minutes)*100}}%;">deep</div>
+                                <div class="fitbit__sleep_bar_rem" style="width: {{(sleep.rem/sleep.total_minutes)*100}}%;">rem</div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="sl__break"></div> -->
                     {% endfor %}
+                    {% else %}
+                    <h4 class="fitbit__name" style="text-align: center;">No Data Available</h4>
+                    {% endif %}
                 </div>
+                <!-- 
+                    #006400 (dark green)
+                    #556B2F (dark olive green)
+                    #8FBC8F (dark sea green)
+                    #2E8B57 (sea green)
+                    #3CB371 (medium sea green)
+                -->
 
             </div>
 
