@@ -3,7 +3,6 @@ body {
     background-color: black;
     color: white;
 }
-
 .container {
     display: flex;
     flex-direction: row;
@@ -17,26 +16,21 @@ body {
     max-width: 25%;
 }
 
+/* TIME AND DATE */
 .container__time {
     text-align: center;
-    border: 1px solid white;
     font-size: 2.7vw;
 }
-.time, .date {
-    
-    margin: 1vw 0 1vw 0;
-}
-
-
 .container__date {
     text-align: center;
-    border: 1px solid white;
     font-size: 3vw;
 }
-
-.container__sl {
-    border: 1px solid white;
+.time, .date {
+    margin: 0;
+    margin-top: 1vw;
 }
+
+/* SL TRAFFIK */
 .sl__break {
     height: 0.1vw;
     background-color: white;
@@ -53,19 +47,19 @@ body {
     justify-content: space-between;
 }
 .sl__time {
-    font-size: 1.7vw;
+    font-size: 2vw;
     padding: 0 1vw 0 1vw;
     margin: 0;
 }
 .sl__transport__container {
-    /* justify-content: center; */
     display: flex;
     flex-direction: row;
 }
 .sl__icon {
     margin: 1vw;
-    padding: 1vw;
-    border-radius: 15px;
+    padding: 0.7vw 1vw;
+    border-radius: 10px;
+    font-size: 1.25vw;
 }
 .pink {
     background-color: #CD407F;
@@ -86,13 +80,19 @@ body {
     background-color: #787D73;
 }
 
-.todo {
+/* MICROSOFT TODO */
+.todo__list__name {
     text-align: center;
-    border: 1px solid white;
     font-size: 2.5vw;
+    margin: 1.5vw 0 1vw 0;
 }
 .todo__list {
     text-align: left;
+    margin: 0;
+}
+.todo_list_task {
+    margin: 1vw 0 1vw 0;
+    font-size: 1.8vw;
 }
 
 

@@ -34,7 +34,7 @@ class MOA:
 
         # ToDo init
         self.todo = ToDo()
-        self.todo_list = {"name": "No Data Available"}
+        self.todo_list = {"name": "Microsoft To Do", "tasks": ["No Data Available"]}
         self.todo_active = False
         self.todo_refreshed = False
         self.todo_prev_time = "00:00"

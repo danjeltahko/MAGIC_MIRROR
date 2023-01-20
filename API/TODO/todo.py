@@ -51,7 +51,7 @@ class ToDo:
         if (response.status_code == 200):
             load = json.loads(response.text)
             self.access_token = load["access_token"]
-            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"])-10)).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
             self.token_type = load["token_type"]
             self.authorization = self.token_type + " " + self.access_token
             self.header["Authorization"] = self.authorization
@@ -78,7 +78,7 @@ class ToDo:
             load = json.loads(response.text)
             self.access_token = load["access_token"]
             self.token_type = load["token_type"]
-            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"])-10)).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
             self.authorization = self.token_type + " " + self.access_token
             self.header["Authorization"] = self.authorization
             self.refresh_token = load["refresh_token"]
@@ -115,11 +115,11 @@ class ToDo:
 
             else:
                 print("Could not retrive data from microsoft graph, raise error?")
-                return None
+                return {"name": "Microsoft To Do", "tasks": ["Error", f"Could not retrieve data from {self.list_name}"]}
 
         except:
             print("except in try & catch with todo tasks")
-            return None
+            return {"name": "Microsoft To Do", "tasks": ["Error", f"Something went wrong with try & cath when trying to retrieve data from {self.list_name}"]}
 
     def add_task(self, new_task) -> None:
 

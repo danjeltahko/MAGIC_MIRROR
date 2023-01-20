@@ -26,6 +26,8 @@
                     <h2 class="date"> {{ MOA.current_day }}</h2>
                 </div>
 
+                <div class="sl__break"></div>
+
                 <div class="container__sl">
                     <h5 class="sl__header">{{ MOA.sl_travel[0].origin_name }} → {{ MOA.sl_travel[0].destin_name }} </h5>
                     <div class="sl__break"></div>
@@ -43,13 +45,15 @@
                     {% endfor %}
                 </div>
 
-                <div class="todo">
+                <div class="container__todo">
+                    <h4 class="todo__list__name"> {{ MOA.todo_list['name']}} </h4>
+                    <div class="sl__break"></div>
                     <ul class="todo__list">
-                        <h4> {{ MOA.todo_list['name']}} </h4>
                         {% for task in MOA.todo_list['tasks'] %}
-                        <li> {{ task }} </li>
+                        <li class="todo_list_task"> {{ task }} </li>
                         {% endfor %}
                     </ul>
+                    <div class="sl__break"></div>
 
                 </div>
                 

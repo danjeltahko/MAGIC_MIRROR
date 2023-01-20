@@ -35,11 +35,14 @@ $(document).ready(function(){
     });
 
     socket.on('todo', function(to_do) {
-        document.querySelector('.todo').innerHTML = 
-        `<ul class="todo__list">
-        <h4>${to_do.name}</h4>
-        ${to_do.tasks.map(task => `<li>${task}</li>`).join('')}
-        </ul>`;
+        document.querySelector('.container__todo').innerHTML = 
+        `<h4 class="todo__list__name">${to_do.name}</h4>
+        <div class="sl__break"></div>
+        <ul class="todo__list">
+            ${to_do.tasks.map(task => `
+            <li class="todo_list_task">${task}</li>`).join('')}
+        </ul>
+        <div class="sl__break"></div>`;
     });
 
     socket.on('fitbit', function(fitbit) {
