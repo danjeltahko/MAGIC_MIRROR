@@ -16,6 +16,7 @@ class SL:
         self.destin = None
         self.origin_t = None
         self.destin_t = None
+        self.transports = []
         self.legs = []
         self.total_t = None
 
@@ -53,6 +54,7 @@ class SL:
         self.origin_t = None
         self.destin_t = None
         self.legs = []
+        self.transports = []
         self.total_t = None
 
     def convert_datetime(self, date:str, time:str) -> datetime:
@@ -64,7 +66,40 @@ class SL:
         return converted_date
 
     def create_transport_icon(self, product:dict) -> dict:
-        pass
+
+        name = product['name']
+        category = product['catIn']
+        color = ""
+
+        # if category is pendeltåg
+        if (category == "TRN"):
+            color = "pink"
+
+        # if category is tunnelbana
+        elif (category == "MET"):
+            if "grön" in name:
+                color = "green"
+            elif "röd" in name:
+                color = "red"
+            elif "blå" in name:
+                color = "blue"
+        
+        elif (category == "BUS"):
+            if "blå" in name:
+                color = "blue"
+            else:
+                color = "red"
+
+        else:
+            color = "grey"
+
+        transport = {
+            "name" : name,
+            "type" : category,
+            "line" : product['line'],
+            "color": color
+        }
+        return transport
 
     def set_trip(self) -> list:
         travel_url = f"https://api.sl.se/api2/TravelplannerV3_1/trip.json?key={SL_TRAVEL_KEY}"
@@ -113,14 +148,22 @@ class SL:
                             else:
                                 self.total_t = f"{total_time[:4]} tim"
 
+                        # pass if transport is walk && its not first or last 
+                        if (trip["type"] == "WALK"):
+                            continue
 
                         # if transport changes necessary for trip, append stops in legs list
                         else:
-                            new_train = {"origin_name": origin_name,
-                                        "destin_name": destin_name,
-                                        "transport": transport,
-                                        "origin_time": origin_time,
-                                        "destin_time": destin_time}
+                            
+                            transport = self.create_transport_icon(trip['Product'])
+                            self.transports.append(transport)
+                            new_train = {
+                                "origin_name": origin_name,
+                                "origin_time": origin_time,
+                                "destin_name": destin_name,
+                                "destin_time": destin_time,
+                                "transport": transport
+                            }
                             self.legs.append(new_train)
 
                     # create travel object of trip and append to travel list
@@ -131,7 +174,8 @@ class SL:
                                 "destin_name": self.destin,
                                 "destin_time": destin_time_str,
                                 "total_time": self.total_t,
-                                "changes": self.legs}
+                                "changes": self.legs,
+                                "transports": self.transports}
                     self.travel_trips.append(new_travel)
 
                 # print(f"travel_trips array returned\nFirst departure: {self.travel_trips[0]['origin_time']}")
