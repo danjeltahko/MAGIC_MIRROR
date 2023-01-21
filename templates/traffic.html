@@ -28,16 +28,16 @@
     <div class="header__breaker"></div>
     <main>
         <form class="form" action="/traffic/" method="POST">
-            <div class="form__input">
-                <p>
-                    <label class="form__label" for="From">Från :</label>
+            <div class="form__input__container">
+                <div class="form__input">
+                    <label class="form__label" for="From">Från:</label>
                     <input class="form__textinput" type="text" name="From" placeholder="{{ trains[0].origin_name }}">
-                </p>
+                </div>
                 <div class="header__breaker"></div>
-                <p>
-                    <label class="form__label" for="To">Till :</label>
+                <div class="form__input">
+                    <label class="form__label" for="To">Till:</label>
                     <input class="form__textinput" type="text" name="To" placeholder="{{ trains[0].destin_name }}">
-                </p>
+                </div>
             </div>
             <button class="form__submit" type="submit" value="Submit">SÖK</button>
         </form>

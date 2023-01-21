@@ -28,20 +28,22 @@
     <div class="header__breaker"></div>
     <main>
 
-        <a class="TODO__button" href="/todo-list/change-list/"> <h1>Change List</h1> </a>
-        <h1>{{ todo_list.name }}</h1>
+        <a class="TODO__button" href="/todo-list/change-list/"> <h1>{{ todo_list.name }}</h1> </a>
+
         <form class="form" action="/todo-list/" method="POST">
-            <label class="form__label">->  </label>
-            <input class="form__textinput" type="text" name="todo__task">
-            <button type="submit">Lägg till</button>
+            <div class="form__input">
+                <label class="form__label">►</label>
+                <input class="form__textinput" type="text" name="todo__task">
+            </div>
+            <button class="form__submit">Lägg till</button>
         </form>
-        
-        {% for task in todo_list.tasks %}
-        <h4> • {{ task }} </h4>
-        {% endfor %}
+        <div class="sl__break"></div>
+        <ul class="todo__list">
+            {% for task in todo_list.tasks %}
+            <li class="todo_list_task"> {{ task }} </li>
+            {% endfor %}
+        </ul>
+
     </main>
-    
-
-
 </body>
 </html>

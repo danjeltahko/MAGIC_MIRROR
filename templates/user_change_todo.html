@@ -28,9 +28,11 @@
     <div class="header__breaker"></div>
     <main>
         <form class="form" action="/todo-list/change-list/" method="POST">
-            <button class="form__submit" type="submit" value="Submit" name="todo-list">TODO</button>
-            <button class="form__submit" type="submit" value="Submit" name="shopping-list">Inköpslista</button>
-            <button class="form__submit" type="submit" value="Submit" name="purchase">Handla</button>
+            <div class="button__container">
+                <button class="form__submit_change" type="submit" value="Submit" name="todo-list">TODO</button>
+                <button class="form__submit_change" type="submit" value="Submit" name="shopping-list">Inköpslista</button>
+                <button class="form__submit_change" type="submit" value="Submit" name="purchase">Handla</button>
+            </div>
         </form>
     </main>
     <footer></footer>

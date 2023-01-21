@@ -1,13 +1,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: rgb(252, 140, 4);
+    background-color: #FC8C04;
 }
-
-.test {
-    background-color: #ffa500;
-
-}
-
 .navbar {
     max-width: 640px;
     margin: 20px auto;
@@ -18,22 +12,18 @@ body {
     font-size: 26px;
     color:black;
 }
-
 .navbar__brand {
     display: flex;
     align-items: center;
 }
-
 .navbar__logo {
     margin-right: 30px;
     width: 40px;
 }
-
 .navigation__button {
     display: inline-block;
     cursor: pointer;
 }
-
 .line1, .line2, .line3 {
     width: 35px;
     height: 5px;
@@ -41,26 +31,21 @@ body {
     margin: 6px 0;
     transition: 0.4s;
 }
-
 .change .line1 {
     transform: translate(0, 11px) rotate(-45deg);
     background-color: #818181;
     position: relative;
     z-index: 1;
 }
-
 .change .line2 {
     opacity: 0;
 }
-
 .change .line3 {
     transform: translate(0, -11px) rotate(45deg);
     background-color: #818181;
     position: relative;
     z-index: 1;
 }
-
-
 .side_nav {
     height: 100%;
     width: 0%;
@@ -75,30 +60,19 @@ body {
 	z-index: 0;
 
 }
-
 .side_nav a {
-
     width:fit-content;
     margin: 10px auto;
     padding: 10px 20px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
-
     display: flex;
     flex-direction: column;
 }
-
 .side_nav a:hover {
     color: #f1f1f1;
 }
-
-
-
-
-
-
-
 
 
 .header__breaker {
@@ -106,6 +80,7 @@ body {
     background-color: black;
 }
 
+/* INSIDE USER MENU */
 .main {
     max-width: 450px;
     margin: 10px auto;
@@ -113,7 +88,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 .main__link {
     background-color: black;
     border: none;
@@ -128,34 +102,31 @@ body {
     text-align: center;
 }
 
-.topright {
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
+/* FORM - TRAFFIC & TODO */
 .form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 10px 0px 20px 0px;
 }
-
 .form__input {
     width:350px;
     background-color: white;
-    padding: 0 20px 0 20px;
-    margin-top: 40px;
-    margin-bottom: 20px;
+    /* padding-left: 10px; */
+    margin: 20px 0px;
     border: solid black 2px;
+    display: flex;
+    flex-direction: row;
 }
-
+.form__label {
+    padding: 10px;
+    text-align: center;
+}
 .form__textinput {
     border: none;
     font-size: 18px;
-    padding-right: 50px;
+    width: inherit;
 }
-
 .form__submit {
     background-color: black;
     border: none;
@@ -166,11 +137,40 @@ body {
     color: white;
     cursor: pointer;
 }
-
+.button__container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5vw;
+}
+.form__submit_change {
+    background-color: black;
+    border: none;
+    font-size: 7vw;
+    font-weight: bold;
+    padding: 20px 40px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    margin: 2vw;
+}
 .form__submit:hover {
     background-color: rgb(70, 69, 69);
 }
-
+.TODO__button {
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    margin: 0;
+}
+.todo__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0 7vw 0 10vw;
+}
+.todo_list_task {
+    margin: 1vw 0 1vw 0;
+    font-size: 5vw;
+}
 
 
 /* SL TRAFFIK */
@@ -223,4 +223,3 @@ body {
 .grey {
     background-color: #787D73;
 }
-
