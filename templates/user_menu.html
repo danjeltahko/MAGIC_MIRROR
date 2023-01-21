@@ -42,7 +42,9 @@
         <div class="main">
             <a class="main__link" href="/traffic/">🚂 SL Trafik</a>
             <a class="main__link" href="/todo-list/">✅ TODO</a>
+            {% if not MOA.fitbit_active%}
             <a class="main__link" href="/fitbit/">🏋🏽 FITBIT</a>
+            {% endif %}
             <a class="main__link" href="/" >🪞 Magic Mirror (DEMO)</a>
         </div>
     </main>

@@ -47,8 +47,25 @@ $(document).ready(function(){
 
     socket.on('fitbit', function(fitbit) {
         document.querySelector('.container__fitbit').innerHTML = 
-        `<h4>Sömn: ~${fitbit['summary']['hours']}h ${fitbit['summary']['minutes']}min</h4>
-        ${fitbit.data.map(sleep =>  `<p>${sleep['day']} -> ${sleep['hours']}h ${sleep['minutes']}min</p>`).join('')}`;
+        `<h4 class="fitbit__summary">${fitbit['summary']}</h4>
+        <div class="sl__break"></div>
+            ${fitbit.data.map(sleep =>
+            `<div class="fitbit__total_sleep__container">
+                <div class="fitbit__total_sleep_date">
+                    <p class="fitbit__total_sleep_day">${sleep['day']}</p>
+                    <p class="fitbit__total_sleep_time">${sleep.start.substring(11, 16)}‣${sleep.end.substring(11, 16)}</p>
+                </div>
+                <p class="fitbit__total_sleep_summary">${sleep['hours']}h ${sleep['minutes']}min</p>
+            </div>
+            <div class="fitbit__sleep_bar__container">
+                <div class="fitbit__sleep_bar">
+                    <div class="fitbit__sleep_bar_light" style="width: ${(sleep.light/sleep.total_minutes)*100}%;">light</div>
+                    <div class="fitbit__sleep_bar_deep" style="width: ${(sleep.deep/sleep.total_minutes)*100}%;">deep</div>
+                    <div class="fitbit__sleep_bar_rem" style="width: ${(sleep.rem/sleep.total_minutes)*100}%;">rem</div>
+                </div>
+            </div>
+            `).join('')}
+        `;
     });
 
     socket.on('weather_current', function(weather_current) {

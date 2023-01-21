@@ -5,18 +5,18 @@ import json
 
 from API.api_keys import *
 
-
 class Fitbit:
 
     def __init__(self) -> None:
 
+        # This header is used for api request, not authorization
         self.header = {
             "Authorization" : None,
             "Accept": "application/json",
             "Accept-Encoding": "gzip, deflate, br",
             "connection":"keep-alive"
         }
-
+        # General init
         self.user_id = None
         self.access_token = None
         self.refresh_token = None
@@ -33,10 +33,10 @@ class Fitbit:
             "code_challenge_method": "S256",
             "state": FITBIT_STATE
         }
-        print(f"Creating URL for fitbit")
+        # parse.urlencode creates url suited string of all parameters
         return f"https://www.fitbit.com/oauth2/authorize?{parse.urlencode(params)}"
 
-    def get_token(self, code:str):
+    def get_token(self, code:str) -> bool:
         """ Gets access token from fitbit """
         URL = "https://api.fitbit.com/oauth2/token"
         data = {
@@ -45,52 +45,42 @@ class Fitbit:
             "code": code,
             "code_verifier": FITBIT_CODE_VERIFIER
         }
+        # if everything worked as intended response will give as access token & other necessary data
         response = requests.post(URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        print(f"Received code from redirected URI\n-> {code}")
-        print(f"Response: {response.status_code}\nData: {response.text}")
         if (response.status_code == 200):
             load = json.loads(response.text)
             self.user_id = load["user_id"]
             self.access_token = load["access_token"]
             self.refresh_token = load["refresh_token"]
             self.token_type = load["token_type"]
-            self.authorization = self.token_type + " " + self.access_token
-            self.header["Authorization"] = self.authorization
-            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"]))).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+            self.header["Authorization"] = self.token_type + " " + self.access_token
+            self.expires_in = datetime.strptime((datetime.now() + timedelta(seconds=int(load["expires_in"])-10)).strftime("%m-%d-%y %H:%M:%S"), "%m-%d-%y %H:%M:%S")
+            return True
         else:
-            print("Failed to retrive access token...")
+            return False
 
-    def refreshing_token(self):
+    def refreshing_token(self) -> bool:
+        """ refreshing access token when it expires """
         data = {
             "grant_type": "refresh_token",
             "client_id": FITBIT_CLIENT_ID,
             "refresh_token": self.refresh_token
         }
         URL = "https://www.fitbit.com/oauth2/authorize"
+        # if everything worked as intended response will give as a new access token
         response = requests.post(URL, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
-        print(response)
         if (response.status_code == 200):
             load = json.loads(response.text)
             self.user_id = load["user_id"]
             self.access_token = load["access_token"]
             self.refresh_token = load["refresh_token"]
             self.token_type = load["token_type"]
+            return True
         else:
-            print("Failed to retrive refreshed access token...")
+            return False
 
-
-    def access_user_data(self):
-        authorization = self.token_type + " " + self.access_token
-        url = "https://api.fitbit.com/1/user/-/profile.json"
-        header = {
-            "Authorization" : authorization
-        }
-        response = requests.get(url, headers=header)
-        print(response)
-        #print(response.text)
-
-    def get_sleep_log(self):
-
+    def get_sleep_log(self) -> dict:
+        """ returns all sleep data from past week """
         url = f"https://api.fitbit.com/1.2/user/{self.user_id}/sleep/list.json"
         past_week = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
         parameters = {
@@ -106,13 +96,14 @@ class Fitbit:
         else:
             return None
 
-    def get_sleep_summary(self):
+    def get_sleep_summary(self) -> dict:
         """ 
             adds past weeks sleep data as dictionary in list 
             with startdate & enddate and also summary.
             * adds an average dictionary at det end
         """
         data = self.get_sleep_log()
+        # if data is a dictionary with sleep data
         if (data != None):
             sleep_data = []
             total_minutes = 0
@@ -149,23 +140,10 @@ class Fitbit:
 
             avg_sleep = int(total_minutes/len(data["sleep"]))
             fitbit_sleep = {"summary": f"Sömn: ~{int(avg_sleep/60)}h {avg_sleep % 60}min", "data": sleep_data}
-
             return fitbit_sleep
         else:
-            print("Could not retrieve sleep log")
-            return {"summary": "Error", "data": ["Could not retrieve sleep log"]}
-
-
-
-
-        
+            return {"summary": "ERROR", "data": ["Could not retrieve sleep log"]}
 
 
 if __name__ == "__main__":
     fitbit = Fitbit()
-
-
-
-
-
-

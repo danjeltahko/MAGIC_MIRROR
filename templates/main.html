@@ -46,6 +46,7 @@
                 </div>
 
                 <div class="container__todo">
+                    {% if MOA.todo_active %}
                     <h4 class="todo__list__name"> {{ MOA.todo_list['name']}} </h4>
                     <div class="sl__break"></div>
                     <ul class="todo__list">
@@ -53,8 +54,13 @@
                         <li class="todo_list_task"> {{ task }} </li>
                         {% endfor %}
                     </ul>
+                    {% else %}
+                    <h4 class="todo__list__name">Microsoft To Do</h4>
                     <div class="sl__break"></div>
-
+                    <li class="todo_list_task">No Data Available</li>
+                    {% endif %}
+                    <div class="sl__break"></div>
+                    
                 </div>
                 
             </div>
@@ -109,7 +115,7 @@
                     <div class="sl__break"></div>
                     {% for sleep in MOA.fitbit_list['data'] %}
                         <div class="fitbit__total_sleep__container">
-                            <div class="fitbit__total_sleep_date" style="display: flex; flex-direction: column;">
+                            <div class="fitbit__total_sleep_date">
                                 <p class="fitbit__total_sleep_day">{{ sleep['day'] }}</p>
                                 <p class="fitbit__total_sleep_time">{{ sleep.start[11:16] }}‣{{ sleep.end[11:16] }}</p>
                             </div>

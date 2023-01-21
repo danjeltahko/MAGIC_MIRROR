@@ -28,23 +28,22 @@ class MOA:
         self.weather_current = {}
         self.weather_forecast = []
         self.weather_refresh = False
-        self.weather_time = "00:00:00"
         self.__WEATHER__(self.weather_location)
 
 
         # ToDo init
         self.todo = ToDo()
-        self.todo_list = {"name": "Microsoft To Do", "tasks": ["No Data Available"]}
+        self.todo_list = {}
         self.todo_active = False
         self.todo_refreshed = False
-        self.todo_prev_time = "00:00"
         self.todo_expires = None
 
         # Fitbit init
         self.fitbit = Fitbit()
-        self.fitbit_list = {"summary": "Fitbit"}
+        self.fitbit_list = {}
         self.fitbit_active = False
         self.fitbit_refreshed = False
+        self.fitbit_expires = None
 
 
 
@@ -53,6 +52,7 @@ class MOA:
 
         # General init
         self.connected = 0
+        self.minute_time = "00:00"
 
 
     """ ### Time & Date ### """
@@ -131,7 +131,6 @@ class MOA:
     def __TODO__(self):
         """ When access token is received, set standard list, timestamp & activate"""
         self.set_other_list("Inköpslista")
-        self.todo_prev_time = self.get_current_time().strftime("%H:%M")
         self.todo_expires = self.todo.expires_in
         self.todo_active = True
         self.todo_refreshed = True
@@ -144,7 +143,7 @@ class MOA:
         """ gets access token and sets authorization token"""
         self.todo.get_token(token)
 
-    def refresh_auth_token(self) -> None:
+    def todo_refresh_auth_token(self) -> None:
         """ refreshing authorization token """
         self.todo.refresh_get_token()
         self.todo_expires = self.todo.expires_in
@@ -173,28 +172,47 @@ class MOA:
 
     """ ### FITBIT ### """
     def __FITBIT__(self):
+        self.fitbit_expires = self.fitbit.expires_in
         self.fitbit_list = self.set_sleep_summary()
-        self.fitbit_active = True
         self.fitbit_refreshed = True
 
     def get_fitbit_auth(self) -> str:
-        """ returns microsoft log in url for authentication """
+        """ returns todo url for authentication """
+        self.log_data("MOA FITBIT - Creating URL for fitbit to receive access token")
         return self.fitbit.authorize()
 
     def set_fitbit_auth(self, code:str) -> None:
-        self.fitbit.get_token(code)
+        """ making get request for access token with given code from auth url"""
+        self.log_data("MOA FITBIT - Trying to received access token from https://api.fitbit.com/oauth2/token with retrieved code token")
+        auth = self.fitbit.get_token(code)
+        if (auth):
+            self.log_data("MOA FITBIT - Successfully received access token")
+        else:
+            self.log_data("[ERROR] MOA FITBIT - Failed to received access token")
 
-    def set_sleep_summary(self):
+    def fitbit_refresh_auth_token(self) -> None:
+        """ refreshing authorization token """
+        self.log_data("MOA FITBIT - Trying to refresh access token from https://www.fitbit.com/oauth2/authorize")
+        auth = self.todo.refresh_get_token()
+        if (auth):
+            self.log_data("MOA FITBIT - Successfully refreshed access token")
+            self.todo_expires = self.todo.expires_in
+        else:
+            self.log_data("[ERROR] MOA FITBIT - Failed to refreshed access token")
+
+    def set_sleep_summary(self) -> dict:
+        self.log_data("MOA FITBIT - Trying to get Sleep Data from API")
         sleep_log = self.fitbit.get_sleep_summary()
-        if (len(sleep_log) != 0):
+        if (sleep_log["summary"] != "ERROR"):
+            self.log_data("MOA FITBIT - Successfully received new Sleep Data from API")
+            if (not self.fitbit_active):
+                self.fitbit_active = True
             return sleep_log
         else:
-            print("MOA had a problem with retrieving sleep log from fitbit")
-            return None
+            self.log_data("[ERROR] MOA FITBIT - Failed to received new Sleep Data from API")
+            self.fitbit_active = False
+            return sleep_log
             
-    def get_sleep(self):
-        return self.fitbit_list
-
 
     """     Weather     """
     def __WEATHER__(self, city:str):

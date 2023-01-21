@@ -31,7 +31,7 @@ def index():
 @app.route("/user/")
 def user_navigation():
     """ View for User Menu """
-    return render_template('user_menu.html')
+    return render_template('user_menu.html', MOA=MoA)
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
@@ -103,11 +103,9 @@ def todo_list():
 def fitbit():
 
     if (MoA.fitbit_active):
-
         return redirect("/user/")
-
     else:
-        MoA.log_data(f"App Route /fitbit : Not activated, redirected to /login/fitbit")
+        MoA.log_data(f"APP /fitbit/ : Fitbit not activated, redirected to /login/fitbit/")
         return redirect("/login/fitbit")
 
 @app.route("/todo-list/change-list/", methods=['POST', 'GET'])
@@ -162,8 +160,7 @@ def test_login_auth(application):
     # which in turn will redirect to our /getFitbitToken
     elif (application == 'fitbit'):
         auth_url = MoA.get_fitbit_auth()
-        MoA.log_data(f"App Route /login/fitbit : Redirecting to Fitbit for Authorization")
-        print("Redirecting to Fitbit for Authorization")
+        MoA.log_data(f"APP /login/fitbit : Redirecting to Fitbit for Authorization")
         return redirect(auth_url)
 
     # If application ID doesnt match with any application
@@ -190,34 +187,14 @@ def get_todo_token():
 def get_fitbit_token():
 
     if (request.args.get('error')):
-        MoA.log_data(f"App Route getFitbitToken/ : Authorized Failed! Could not receive token ")
-        print("Authorized Failed!!")
+        MoA.log_data(f"ERROR] APP /getFitbitToken/ : Authorized Failed! Could not receive access token")
     else:
         code_token = request.args.get('code')
-        MoA.log_data(f"App Route getFitbitToken/ : Authorized Successfully! Token received")
-        print("Authorized Successfully Token received in /getFitbitToken/!!")
+        MoA.log_data(f"APP /getFitbitToken/ : Successfully Authorized! code token from url received")
         MoA.set_fitbit_auth(code_token)
         MoA.__FITBIT__()
 
     return redirect("/fitbit/")
-
-@app.route("/weather/")
-def weather():
-    current_weather = MoA.set_current_weather()
-    return render_template("weather_test.html", weather=MoA)
-
-
-@app.route('/testing')
-def weather_test():
-    current_weather = MoA.get_weather()
-    forecast = MoA.get_forecast_today()
-    return render_template('weather.html', current_weather=current_weather, today=forecast)
-
-@app.route('/m-m')
-def magic_mirror():
-    trains = MoA.get_travel()
-    forecast = MoA.get_forecast()
-    return render_template('magic_mirror.html', trains=trains, forecast=forecast)
 
 
 # Event Decoration 
@@ -249,9 +226,12 @@ def moa_thread():
         if (MoA.current_time != current_time.strftime("%H:%M:%S")):
             socketio.emit('time', current_time.strftime('%H:%M:%S'))
             MoA.current_time = current_time.strftime("%H:%M:%S")
-            if (MoA.weather_time != current_time.strftime("%H:%M")):
+            # refreshes weather & fitbit data every minute
+            if (MoA.minute_time != current_time.strftime("%H:%M")):
                 MoA.weather_refresh = True
-                MoA.weather_time = current_time.strftime("%H:%M")
+                MoA.todo_refreshed = True
+                MoA.fitbit_refreshed = True
+                MoA.minute_time = current_time.strftime("%H:%M")
 
 
         """ DATE """
@@ -291,29 +271,27 @@ def moa_thread():
         if (MoA.todo_active):
 
             if (MoA.todo_expires <= datetime.now()):
-                MoA.refresh_auth_token()
+                MoA.todo_refresh_auth_token()
 
             if (MoA.todo_refreshed):
                 print("Sends update to socket - inside TODO thread because of refresh")
-                socketio.emit('todo', MoA.todo_list)
+                todo_list = MoA.get_list()
+                socketio.emit('todo', todo_list)
                 MoA.todo_refreshed = False
                 MoA.log_data(f"App Thread TODO : Updated Mirror because of todo refresh")
-
-            elif (MoA.todo_prev_time != current_time.strftime("%H:%M")):
-                print("inside TODO thread because of time passed")
-                refreshed_todo = MoA.get_list()
-                socketio.emit('todo', refreshed_todo)
-                MoA.log_data(f"App Thread TODO : Updated Mirror because of time passed {MoA.todo_prev_time}-{current_time.strftime('%H:%M')}")
-                MoA.todo_prev_time = current_time.strftime("%H:%M")
 
         """ FITBIT """
         if (MoA.fitbit_active):
 
+            if (MoA.fitbit_expires <= datetime.now()):
+                MoA.log_data(f"APP FITBIT : Access token expires soon!")
+                MoA.fitbit_refresh_auth_token()
+
             if (MoA.fitbit_refreshed):
-                print("Sends update to socket - inside FITBIT thread because of refresh")
-                socketio.emit('fitbit', MoA.fitbit_list)
+                fitbit_sleep = MoA.set_sleep_summary()
+                socketio.emit('fitbit', fitbit_sleep)
                 MoA.fitbit_refreshed = False
-                MoA.log_data(f"App Thread FITBIT : Updated Mirror because of fitbit refresh")
+                MoA.log_data(f"APP FITBIT : Updated Magic Mirror with new data from fitbit")
 
         """ WEATHER """
         if (MoA.weather_refresh):
