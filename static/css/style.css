@@ -171,3 +171,56 @@ body {
     background-color: rgb(70, 69, 69);
 }
 
+
+
+/* SL TRAFFIK */
+.sl__break {
+    height: 2px;
+    background-color: black;
+    margin: 1vw 10%;
+}
+.sl__header {
+    text-align: center;
+    font-size: 5vw;
+    margin: 2vw 0 3vw 0;
+}
+.sl__time__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.sl__time {
+    font-size: 4vw;
+    padding: 0 1vw 0 1vw;
+    margin: 0;
+}
+.sl__transport__container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 20%;
+}
+.sl__icon {
+    margin: 1vw;
+    padding: 0.7vw 1vw;
+    border-radius: 10px;
+    font-size: 3vw;
+}
+.pink {
+    background-color: #CD407F;
+}
+.red {
+    background-color: #D71D24;
+}
+.green {
+    background-color: #168541;
+}
+.blue {
+    background-color: #027DB8;
+}
+.orange {
+    background-color: #B6601E;
+}
+.grey {
+    background-color: #787D73;
+}
+

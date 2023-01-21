@@ -41,10 +41,21 @@
             </div>
             <button class="form__submit" type="submit" value="Submit">SÖK</button>
         </form>
-        <div class="topright" id="right">
-            <p>{{ trains[0].origin_name }} -> {{ trains[0].destin_name }}</p>
+
+        <div class="container__sl">
+            <h5 class="sl__header">{{ trains[0].origin_name }} → {{ trains[0].destin_name }} </h5>
+            <div class="sl__break"></div>
             {% for trip in trains %}
-                <p>{{ trip.origin_time[9:14] }} -> {{ trip.destin_time[9:14] }}</p>
+                <div class="sl__time__container">
+                    <p class="sl__time"> {{ trip.origin_time[9:14] }} ‣ {{ trip.destin_time[9:14] }}</p>
+                    <p class="sl__time"> {{ trip.total_time }}</p>
+                </div>
+                <div class="sl__transport__container">
+                    {% for transport in trip.transports %}
+                        <p class="sl__icon {{transport.color}}">{{ transport.line }}</p>
+                    {% endfor %}
+                </div>
+                <div class="sl__break"></div>
             {% endfor %}
         </div>
     </main>
