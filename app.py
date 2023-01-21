@@ -79,29 +79,32 @@ def adjust_traffic():
 
 @app.route("/todo-list/", methods=['POST', 'GET'])
 def todo_list():
-    
+    """ 
+        if todo is activated, render user_todo template
+        if not, redirect to /login/todo/
+    """
     if (MoA.todo_active):
 
         if (request.method == 'POST'):
             input_task = request.form['todo__task']
             MoA.add_new_task(input_task)
-            MoA.log_data(f"App Route /todo-list/ 'POST' : Added new task ({input_task}) to task-list")
-            get_refresh = MoA.get_list()
-            MoA.todo_refreshed = True
 
-        else:
-            get_refresh = MoA.get_list()
-
-        return render_template('user_todo.html', todo_list=get_refresh)
+        todo_refreshed = MoA.get_list()
+        MoA.todo_refreshed_user = True
+        MoA.todo_refreshed = True
+        return render_template('user_todo.html', todo_list=todo_refreshed)
     
     else:
-        MoA.log_data(f"App Route /todo-list : Not activated, redirected to /login/todo")
+        MoA.log_data(f"APP /todo-list/ : Microsoft TODO not activated, redirected to /login/todo/")
         return redirect("/login/todo")
-
 
 @app.route("/fitbit/")
 def fitbit():
-
+    """ 
+    When fitbit button is pressed in /user/
+    If fitbit is activated -> redirect to /user/ and button will disappear 
+    If fitbit is not activated -> redirect to /login/fitbit/ for activation
+    """
     if (MoA.fitbit_active):
         return redirect("/user/")
     else:
@@ -110,38 +113,33 @@ def fitbit():
 
 @app.route("/todo-list/change-list/", methods=['POST', 'GET'])
 def change_todo_list():
-
+    """ inside user todo, change list for mirror & user interface """
     if (MoA.todo_active):
 
         if (request.method == 'POST'):
             
             if ('todo-list' in request.form):
-                MoA.set_other_list("TODO")
-                MoA.todo_refreshed = True
+                MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'TODO'}")
+                MoA.todo_list["name"] = "TODO"
                 return redirect("/todo-list/")
 
             elif ('shopping-list' in request.form):
-                MoA.set_other_list("Inköpslista")
-                MoA.todo_refreshed = True
+                MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'Inköpslista'}")
+                MoA.todo_list["name"] = "Inköpslista"
                 return redirect("/todo-list/")
 
             elif ('purchase' in request.form):
-                MoA.set_other_list("Handla")
-                MoA.todo_refreshed = True
+                MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'Handla'}")
+                MoA.todo_list["name"] = "Handla"
                 return redirect("/todo-list/")
             
             else:
                 return render_template('user_change_todo.html')
-
         else:
             return render_template('user_change_todo.html')
-    
     else:
-        print("Something went wrong in 'change_todo_list' not active?")
-        return redirect("/login/todo")
+        return redirect("/user/")
 
-
-# Log in route for API with OAuth
 @app.route("/login/<application>/")
 def test_login_auth(application):
 
@@ -149,10 +147,8 @@ def test_login_auth(application):
     # redirecting to Microsoft url for authentication
     # which in turn will redirect to our /getAzureToken
     if (application == 'todo'):
-        # Creates authentication url 
         auth_url = MoA.get_todo_auth()
-        MoA.log_data(f"App Route /login/todo : Redirecting to Microsoft for Authorization")
-        print("Redirecting to Microsoft for Authorization")
+        MoA.log_data(f"APP /login/todo/ : Redirecting to Microsoft for Authorization")
         return redirect(auth_url)
 
     # If we have to log in and authenticate Fitbit
@@ -160,28 +156,26 @@ def test_login_auth(application):
     # which in turn will redirect to our /getFitbitToken
     elif (application == 'fitbit'):
         auth_url = MoA.get_fitbit_auth()
-        MoA.log_data(f"APP /login/fitbit : Redirecting to Fitbit for Authorization")
+        MoA.log_data(f"APP /login/fitbit/ : Redirecting to Fitbit for Authorization")
         return redirect(auth_url)
 
     # If application ID doesnt match with any application
     else:
-        MoA.log_data(f"App Route /login/{application} : Tried to log in to {application}, but not found")
+        MoA.log_data(f"[ERROR] APP /login/{application} : Tried to log in to {application}, but not found")
         return render_template('404.html', data={"page": "Log in", "variable": application})
 
 @app.route("/getAzureToken/")
 def get_todo_token():
 
     if (request.args.get('error')):
-        MoA.log_data(f"App Route /getAzureToken/ : Authorized Failed! Could not receive token ")
-        print("Authorized Failed!!")
+        MoA.log_data(f"[ERROR] APP /getAzureToken/ : Authorized Failed! Could not receive access token ")
+        return redirect("/user/")
     else:
         code_token = request.args.get('code')
-        MoA.log_data(f"App Route /getAzureToken/ : Authorized Successfully! Token received")
-        print("Authorized Successfully Token received in /getAzureToken/!!")
-        MoA.set_auth(code_token)
-        MoA.__TODO__()
-
-    return redirect("/todo-list/")
+        MoA.log_data(f"APP /getAzureToken/ : Authorized Successfully! Code Token from url received")
+        MoA.set_todo_auth(code_token)
+        MoA.todo_list["name"] = "Inköpslista"
+        return redirect("/todo-list/")
 
 @app.route("/getFitbitToken/")
 def get_fitbit_token():
@@ -190,12 +184,11 @@ def get_fitbit_token():
         MoA.log_data(f"ERROR] APP /getFitbitToken/ : Authorized Failed! Could not receive access token")
     else:
         code_token = request.args.get('code')
-        MoA.log_data(f"APP /getFitbitToken/ : Successfully Authorized! code token from url received")
+        MoA.log_data(f"APP /getFitbitToken/ : Successfully Authorized! Code token from url received")
         MoA.set_fitbit_auth(code_token)
-        MoA.__FITBIT__()
+        MoA.fitbit_refreshed = True
 
-    return redirect("/fitbit/")
-
+    return redirect("/user/")
 
 # Event Decoration 
 @socketio.on('connect')
@@ -271,14 +264,20 @@ def moa_thread():
         if (MoA.todo_active):
 
             if (MoA.todo_expires <= datetime.now()):
+                MoA.log_data(f"APP TODO : Access token expires soon!")
                 MoA.todo_refresh_auth_token()
 
             if (MoA.todo_refreshed):
-                print("Sends update to socket - inside TODO thread because of refresh")
-                todo_list = MoA.get_list()
+                # if get/post request was just made by user
+                if (MoA.todo_refreshed_user):
+                    todo_list = MoA.todo_list
+                    MoA.todo_refreshed_user = False
+                else:
+                    todo_list = MoA.get_list()
+
                 socketio.emit('todo', todo_list)
                 MoA.todo_refreshed = False
-                MoA.log_data(f"App Thread TODO : Updated Mirror because of todo refresh")
+                MoA.log_data(f"APP TODO : Updated Mirror with new data from Microsoft TODO")
 
         """ FITBIT """
         if (MoA.fitbit_active):

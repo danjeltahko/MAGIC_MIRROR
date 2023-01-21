@@ -33,9 +33,10 @@ class MOA:
 
         # ToDo init
         self.todo = ToDo()
-        self.todo_list = {}
+        self.todo_list = {"name": None}
         self.todo_active = False
         self.todo_refreshed = False
+        self.todo_refreshed_user = False
         self.todo_expires = None
 
         # Fitbit init
@@ -76,7 +77,7 @@ class MOA:
 
     """ ### SL Traffic ### """
     def __SL__(self, travel_from:str, travel_tooo:str) -> None:
-        self.log_data(f"MOA __init__ : __SL__")
+        self.log_data(f"MOA SL : SL __init__ ")
         self.set_new_from_station(travel_from)
         self.set_new_tooo_station(travel_tooo)
         self.set_new_travel()
@@ -128,90 +129,102 @@ class MOA:
 
     
     """ ### ToDo ### """
-    def __TODO__(self):
-        """ When access token is received, set standard list, timestamp & activate"""
-        self.set_other_list("Inköpslista")
-        self.todo_expires = self.todo.expires_in
-        self.todo_active = True
-        self.todo_refreshed = True
-
     def get_todo_auth(self) -> str:
         """ returns microsoft log in url for authentication """
+        self.log_data("MOA TODO : Creating URL for Microsoft TODO to receive access token")
         return self.todo.authorize()
 
-    def set_auth(self, token) -> None:
+    def set_todo_auth(self, token) -> None:
         """ gets access token and sets authorization token"""
-        self.todo.get_token(token)
+        self.log_data("MOA TODO : Trying to received access token from https://login.microsoftonline.com/common/oauth2/v2.0/token with retrieved code token")
+        auth = self.todo.get_token(token)
+        if (auth):
+            self.log_data("MOA TODO : Successfully received access token")
+            self.todo_expires = self.todo.expires_in
+            self.todo_active = True
+        else:
+            self.log_data("[ERROR] MOA TODO : Failed to received access token")
+            self.todo_active = False
 
     def todo_refresh_auth_token(self) -> None:
         """ refreshing authorization token """
-        self.todo.refresh_get_token()
-        self.todo_expires = self.todo.expires_in
-
-    def set_other_list(self, user_input:str) -> None:
-        print("Sets new list inside (set_other_list)")
-        self.todo_list = self.todo.return_tasks(user_input)
-        
-    def get_other_list(self, user_input:str) -> dict:
-        print("Get new list inside (get_other_list)")
-        self.todo_list = self.todo.return_tasks(user_input)
-        return self.todo_list
+        self.log_data("MOA TODO : Trying to refresh access token from https://login.microsoftonline.com/common/oauth2/v2.0/token")
+        auth = self.todo.refresh_get_token()
+        if (auth):
+            self.log_data("MOA TODO : Successfully refreshed access token")
+            self.todo_expires = self.todo.expires_in
+        else:
+            self.log_data("[ERROR] MOA TODO : Failed to refreshed access token")
+            self.fitbit_active = False
 
     def get_list(self) -> dict:
-        print("Gets new list inside (get_list)")
+        """ returns dictionary with task from todo list """
+        self.log_data(f"MOA TODO : Trying to get tasks from {self.todo_list['name']} list from Microsoft API")
         self.todo_list = self.todo.return_tasks(self.todo_list["name"])
+        if (self.todo_list["name"] != "ERROR"):
+            self.log_data(f"MOA TODO : Successfully received tasks from {self.todo_list['name']} list")
+            if (not self.todo_active):
+                self.todo_active = True
+        else:
+            self.log_data(f"[ERROR] MOA TODO : Failed to received tasks from {self.todo_list['name']} list")
+            self.todo_active = False
+        
         return self.todo_list
 
-    def get_expired_time(self) -> datetime:
-        return self.todo.expires_in
-
-    def add_new_task(self, task_input):
-        print("Sets new list inside (add_new_task)")
-        self.todo.add_task(task_input)
+    def add_new_task(self, task_input) -> None:
+        """ Try to add new task to todo list"""
+        self.log_data(f"MOA TODO : Trying to add a new task to {self.todo_list['name']} list")
+        success = self.todo.add_task(task_input)
+        if (success):
+            self.log_data(f"MOA TODO : Successfully added '{task_input}' task to {self.todo_list['name']} list")
+            if (not self.todo_active):
+                self.todo_active = True
+        else:
+            self.log_data(f"[ERROR] MOA TODO : Failed to add '{task_input}' task to {self.todo_list['name']} list")
+            self.todo_active = False
 
 
     """ ### FITBIT ### """
-    def __FITBIT__(self):
-        self.fitbit_expires = self.fitbit.expires_in
-        self.fitbit_list = self.set_sleep_summary()
-        self.fitbit_refreshed = True
-
     def get_fitbit_auth(self) -> str:
         """ returns todo url for authentication """
-        self.log_data("MOA FITBIT - Creating URL for fitbit to receive access token")
+        self.log_data("MOA FITBIT : Creating URL for fitbit to receive access token")
         return self.fitbit.authorize()
 
     def set_fitbit_auth(self, code:str) -> None:
         """ making get request for access token with given code from auth url"""
-        self.log_data("MOA FITBIT - Trying to received access token from https://api.fitbit.com/oauth2/token with retrieved code token")
+        self.log_data("MOA FITBIT : Trying to received access token from https://api.fitbit.com/oauth2/token with retrieved code token")
         auth = self.fitbit.get_token(code)
         if (auth):
-            self.log_data("MOA FITBIT - Successfully received access token")
+            self.log_data("MOA FITBIT : Successfully received access token")
+            self.fitbit_expires = self.fitbit.expires_in
+            self.fitbit_active = True
         else:
-            self.log_data("[ERROR] MOA FITBIT - Failed to received access token")
+            self.log_data("[ERROR] MOA FITBIT : Failed to received access token")
+            self.fitbit_active = False
 
     def fitbit_refresh_auth_token(self) -> None:
         """ refreshing authorization token """
-        self.log_data("MOA FITBIT - Trying to refresh access token from https://www.fitbit.com/oauth2/authorize")
+        self.log_data("MOA FITBIT : Trying to refresh access token from https://www.fitbit.com/oauth2/authorize")
         auth = self.todo.refresh_get_token()
         if (auth):
-            self.log_data("MOA FITBIT - Successfully refreshed access token")
+            self.log_data("MOA FITBIT : Successfully refreshed access token")
             self.todo_expires = self.todo.expires_in
         else:
-            self.log_data("[ERROR] MOA FITBIT - Failed to refreshed access token")
+            self.log_data("[ERROR] MOA FITBIT : Failed to refreshed access token")
+            self.fitbit_active = False
 
     def set_sleep_summary(self) -> dict:
-        self.log_data("MOA FITBIT - Trying to get Sleep Data from API")
-        sleep_log = self.fitbit.get_sleep_summary()
-        if (sleep_log["summary"] != "ERROR"):
-            self.log_data("MOA FITBIT - Successfully received new Sleep Data from API")
+        self.log_data("MOA FITBIT : Trying to get Sleep Data from API")
+        self.fitbit_list = self.fitbit.get_sleep_summary()
+        if (self.fitbit_list["summary"] != "ERROR"):
+            self.log_data("MOA FITBIT : Successfully received new Sleep Data from API")
             if (not self.fitbit_active):
                 self.fitbit_active = True
-            return sleep_log
         else:
-            self.log_data("[ERROR] MOA FITBIT - Failed to received new Sleep Data from API")
+            self.log_data("[ERROR] MOA FITBIT : Failed to received new Sleep Data from API")
             self.fitbit_active = False
-            return sleep_log
+        
+        return self.fitbit_list
             
 
     """     Weather     """
@@ -258,12 +271,7 @@ class MOA:
             dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
             log_file = f"[{dt}] - {data}\n"
             file.write(log_file)
-            file.close()
         
-
-    
-
-
 
 if __name__ == "__main__":
     moa = MOA()
