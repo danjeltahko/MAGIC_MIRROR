@@ -192,8 +192,7 @@ def get_fitbit_token():
 @socketio.on('connect')
 def connect():
     MoA.connected += 1
-    print(f"\nNEW CONNECTION")
-    print(f"\nCONNECTED : {MoA.connected}\n")
+    MoA.log_data(f"APP CONNECTION : New connection to Magic Mirror - Connected : [{MoA.connected}]")
     global thread
     if not thread.is_alive():
         print("Staring Thread")
@@ -202,8 +201,7 @@ def connect():
 @socketio.on('disconnect')
 def disconnect():
     MoA.connected -= 1
-    print(f"\nDISCONNECTION")
-    print(f"CONNECTED : {MoA.connected}\n")
+    MoA.log_data(f"APP CONNECTION : New disconnection to Magic Mirror - Connected : [{MoA.connected}]")
 
 def moa_thread():
 

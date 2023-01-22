@@ -265,7 +265,7 @@ class MOA:
             self.log_data(f"[ERROR] MOA WEATHER : Failed to received new weather forecast data")
             return [{"temperature": "ERROR"}]
 
-    def get_nearest_weather_time(self):
+    def get_nearest_weather_time(self) -> datetime:
         """ Returns first weather date in list: 01-23-2022 22:50:30 """
         nearest_time = self.weather_forecast[0]['dt']
         return datetime.strptime(nearest_time, "%m-%d-%y %H:%M:%S")
@@ -273,11 +273,45 @@ class MOA:
 
     """ LOG DATA """
     def log_data(self, data:str) -> None:
+        """ logs everything to file! """
         with open("log/logged.txt", "a") as file:
             dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
             log_file = f"[{dt}] - {data}\n"
             file.write(log_file)
-        
+
+    def get_logged_data(self, date_start:str=None, date_end:str=None, time_start:str=None, time_end:str=None) -> list[str]:
+        """ returns logs with given parameters or all """
+        try:
+            new_logged_data_list = []
+            with open("log/logged.txt", "r") as file:
+                logged_lines = file.readlines()
+
+                # if no input were given, set default value
+                if (date_start == None):
+                    date_start = "01-01-23"
+                if (time_start == None):
+                    time_start = "00:00"
+                if (date_end == None):
+                    date_end = datetime.now().strftime("%m-%d-%y")
+                if (time_end == None):
+                    time_end = datetime.now().strftime("%H:%M")
+                
+                # converts input to datetime objects
+                start = datetime.strptime(f"{date_start} {time_start}", "%m-%d-%y %H:%M")
+                end = datetime.strptime(f"{date_end} {time_end}", "%m-%d-%y %H:%M")
+
+                for line in logged_lines:
+                    # converts every logged date to datetime object
+                    line_dt = datetime.strptime(line[1:15], "%m-%d-%y %H:%M")
+                    # if logged data is between input datetime
+                    if (line_dt >= start and line_dt <= end):
+                        # add to new list which will be returned
+                        new_logged_data_list.append(line)
+
+                return new_logged_data_list
+
+        except ValueError as e:
+            return [e]
 
 if __name__ == "__main__":
     moa = MOA()
