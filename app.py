@@ -3,10 +3,8 @@ try:
     from flask_socketio import SocketIO
     from threading import Thread, Event
     from datetime import datetime
-    import json
-    import os, sys
+    import os, sys, subprocess
     from moa import MOA
-
     import requests
 
 except ImportError as e:
@@ -19,7 +17,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 socketio = SocketIO(app)
-
+server_process = sys.argv[1]
 thread = Thread()
 
 # View Decoration
@@ -32,6 +30,15 @@ def index():
 def user_navigation():
     """ View for User Menu """
     return render_template('user_menu.html', MOA=MoA)
+
+@app.route("/restart/")
+def restart():
+
+    server_process.terminate()
+    server_process.wait()
+    server_process.run(["git", "pull"])
+    server_process = subprocess.Popen(["python3", "app.py"])
+    print("Successfully restarted server and pulled from GIT")
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
