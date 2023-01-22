@@ -225,41 +225,50 @@ class MOA:
             
 
     """     Weather     """
-    def __WEATHER__(self, city:str):
+    def __WEATHER__(self, city:str) -> None:
+        """ weather init """
         self.set_weather_new_location(city)
         self.weather_current = self.set_current_weather()
         self.weather_forecast = self.set_forecast_weather()
 
-    def set_weather_new_location(self, city:str):
+    def set_weather_new_location(self, city:str) -> None:
+        """ sets new weather location """
         self.weather_location = city
-        self.weather.set_location(city)
+        success = self.weather.set_location(city)
+        if (success):
+            self.log_data(f"MOA WEATHER : Successfully set weather to {city}")
+        else:
+            self.log_data(f"[ERROR] MOA WEATHER : Successfully set weather to {city}")
 
     def set_current_weather(self) -> dict:
+        """ gets new current weather data"""
+        self.log_data("MOA WEATHER : Trying to get current weather data from API")
         current_weather = self.weather.set_current()
         if (current_weather != None):
             self.weather_current = current_weather
-            print("New Weather data is set")
+            self.log_data(f"MOA WEATHER : Successfully received new weather data")
             return self.weather_current
         else:
-            self.log_data("MOA WEATHER: ERROR - current_weather returned None")
-            return {"temperature": "Error"}
+            self.log_data("[ERROR] MOA WEATHER : Failed to receive current_weather data")
+            return {"temperature": "ERROR"}
 
     def set_forecast_weather(self) -> list:
+        """ gets new weather forecast data"""
+        self.log_data("MOA WEATHER : Trying to get weather forecast data from API")
         forecast_weather = self.weather.set_forecast()
         if (forecast_weather != None):
+            # returns only first 4 weather objects
             self.weather_forecast = forecast_weather[:4]
-            print("New forecast is set")
+            self.log_data(f"MOA WEATHER : Successfully received new weather forecast data")
             return self.weather_forecast
         else:
-            self.log_data("MOA WEATHER: ERROR - forecast_weater returned None")
-            return {"temperature": "Error"}
+            self.log_data(f"[ERROR] MOA WEATHER : Failed to received new weather forecast data")
+            return [{"temperature": "ERROR"}]
 
-    def get_current_weather(self):
-        return self.weather_current
-
-    def get_forecast_weather(self):
-        return self.weather_forecast
-
+    def get_nearest_weather_time(self):
+        """ Returns first weather date in list: 01-23-2022 22:50:30 """
+        nearest_time = self.weather_forecast[0]['dt']
+        return datetime.strptime(nearest_time, "%m-%d-%y %H:%M:%S")
 
 
     """ LOG DATA """

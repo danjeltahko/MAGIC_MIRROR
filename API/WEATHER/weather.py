@@ -13,9 +13,8 @@ class Weather:
         self.longitude = None
         self.country   = None
 
-    def set_location(self, city:str) -> None:
+    def set_location(self, city:str) -> bool:
         """ Set location and get lat & lon from search """
-
         URL = f"https://api.openweathermap.org/geo/1.0/direct?q={parse.quote(city)}&limit=5&appid={WEATHER_KEY}"
         response = requests.get(URL)
         # check get request for success
@@ -28,7 +27,6 @@ class Weather:
                 self.longitude = data[0]["lon"]
                 self.location  = data[0]["name"]
                 self.country   = data[0]["country"]
-                print("Successfully found given location and sets lat & lon")
 
             # if given search doesnt exist. Set location to "Uncertain. US"
             else:
@@ -39,14 +37,14 @@ class Weather:
                 self.longitude = data[0]["lon"]
                 self.location  = data[0]["name"]
                 self.country   = data[0]["country"]
-                print("Failed to find given location, sets lat & lon to Uncertain")
+
+            return True
             
         else:
-            print(f"Could not receive data from API request set_location({city})")
+            return False
 
     def set_current(self) -> dict:
         """ Returns dictionary with necessary current weather data """
-
         URL = f"https://api.openweathermap.org/data/2.5/weather?lat={self.latitude}&lon={self.longitude}&units=metric&lang=se&appid={WEATHER_KEY}"
         response = requests.get(URL)
         # check get request for success
@@ -55,7 +53,6 @@ class Weather:
             current_weather = self.create_weather_object(json.loads(response.text))
             return current_weather
         else:
-            print(f"Could not receive data from API request set_current()")
             return None
     
     def set_forecast(self) -> list:

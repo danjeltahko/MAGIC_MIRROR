@@ -76,13 +76,14 @@ $(document).ready(function(){
             </div>
             <h1 class="weather__current__temperature">${weather_current.temperature}</h1>
         </div>
-        <div class="header__breaker"></div>
+        <div class="sl__break"></div>
         <div class="container__weather__current_bot">
             <h5 class="weather__description">${weather_current.description}</h5>
             <p class="weather__feels_like">Känns som ${weather_current.feels_like}</p>
             <div class="sub__weather_description">
-                <p>${weather_current.clouds}</p>
-                <p>${weather_current.wind}</p>
+                <p class="sub__weather_description_text">M : ${weather_current.clouds}</p>
+                <div class="row_break"></div>
+                <p class="sub__weather_description_text">V : ${weather_current.wind}</p>
             </div>
         </div>`;
     })
@@ -90,6 +91,7 @@ $(document).ready(function(){
     socket.on('weather_forecast', function(weather_forecast) {
         document.querySelector('.container__weather__forecast').innerHTML =
         `<div class="container__weather__forecast_hours">
+            <div class="row_break_forecast"></div>
             ${weather_forecast.map(forecast => `
             <div class="weather__forecast_hour">
                 <img class="weather__forecast__icon" src="${forecast.icon}" alt="weather_icon">

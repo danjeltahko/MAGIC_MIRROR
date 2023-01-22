@@ -205,7 +205,6 @@ def disconnect():
     print(f"\nDISCONNECTION")
     print(f"CONNECTED : {MoA.connected}\n")
 
-
 def moa_thread():
 
     # Magic Mirror thread loop with MOA functions
@@ -243,6 +242,7 @@ def moa_thread():
 
             MoA.sl_new = False
             travel = MoA.get_travel()
+            MoA.log_data(f"APP SL : Updated Magic Mirror with the new train departure data")
             socketio.emit('sl', travel)
 
         """ TODO """
@@ -275,15 +275,24 @@ def moa_thread():
                 fitbit_sleep = MoA.set_sleep_summary()
                 socketio.emit('fitbit', fitbit_sleep)
                 MoA.fitbit_refreshed = False
-                MoA.log_data(f"APP FITBIT : Updated Magic Mirror with new data from fitbit")
+                MoA.log_data(f"APP FITBIT : Updated Magic Mirror with the new sleep data from fitbit")
 
         """ WEATHER """
         if (MoA.weather_refresh):
+            # gets new current weather data
             new_current_weather = MoA.set_current_weather()
-            print("New weather set")
+            if (new_current_weather["temperature"] != "ERROR"):
+                socketio.emit('weather_current', new_current_weather)
+                MoA.log_data(f"APP WEATHER : Updated Mirror with the new weather data")
+            # gets new forecast weather data if time passed
+            if (current_time > MoA.get_nearest_weather_time()):
+                new_forecast_weather = MoA.set_forecast_weather()
+                if (new_forecast_weather[0]["temperature"] != "ERROR"):
+                    socketio.emit('weather_forecast', new_current_weather)
+                    MoA.log_data(f"APP WEATHER : Updated Mirror with the new weather forecast data")
+            
             MoA.weather_refresh = False
         
-
 
 if __name__ == '__main__':
     MoA = MOA()
