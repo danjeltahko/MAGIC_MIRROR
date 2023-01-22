@@ -15,9 +15,8 @@ __author__ = 'https://github.com/DanjelTahko'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 socketio = SocketIO(app)
-server_process = sys.argv[1]
 thread = Thread()
 
 # View Decoration
@@ -34,11 +33,10 @@ def user_navigation():
 @app.route("/restart/")
 def restart():
 
-    server_process.terminate()
-    server_process.wait()
-    server_process.run(["git", "pull"])
-    server_process = subprocess.Popen(["python3", "app.py"])
+    subprocess.run(["git", "pull"])
+    subprocess.run(["flask", "run", "-host=0.0.0.0"])
     print("Successfully restarted server and pulled from GIT")
+    return redirect("/user/")
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
