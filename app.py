@@ -53,26 +53,23 @@ def adjust_traffic():
 
         # If new search is same as before: return html page with existing travel
         if (train_from == MoA.last_from_station and train_tooo == MoA.last_tooo_station):
-            MoA.log_data("App Route /traffic 'POST' request: same stations as before, refresh travel")
             return render_template('traffic.html', trains=MoA.get_travel())
 
         # If 'from' is same but 'to' is different: new id search for 'to'
         elif (train_from == MoA.last_from_station and train_tooo != MoA.last_tooo_station):
-            MoA.log_data(f"App Route /traffic 'POST' request: new to_station={train_tooo}")
             MoA.set_new_tooo_station(train_tooo)
 
         # If 'from' is different but 'to' is same: new id search for 'from'
         elif (train_from != MoA.last_from_station and train_tooo == MoA.last_tooo_station):
-            MoA.log_data(f"App Route /traffic 'POST' request: new from_station={train_from}")
             MoA.set_new_from_station(train_from)
 
         # If both searches are different: new id search for both stations
         else:
-            MoA.log_data(f"App Route /traffic 'POST' request: new travel search=({train_from}-{train_tooo})")
             MoA.set_new_from_station(train_from)
             MoA.set_new_tooo_station(train_tooo)
         
         # Sets new travel 
+        MoA.log_data(f"APP /traffic/ : new destination request is set from user")
         MoA.set_new_travel()
 
     return render_template('traffic.html', trains=MoA.get_travel())
@@ -87,7 +84,8 @@ def todo_list():
 
         if (request.method == 'POST'):
             input_task = request.form['todo__task']
-            MoA.add_new_task(input_task)
+            if (len(input_task) != 0):
+                MoA.add_new_task(input_task)
 
         todo_refreshed = MoA.get_list()
         MoA.todo_refreshed_user = True
@@ -226,37 +224,24 @@ def moa_thread():
                 MoA.fitbit_refreshed = True
                 MoA.minute_time = current_time.strftime("%H:%M")
 
-
         """ DATE """
         #  Gets & sets current date and updates page with new date
         current_date = MoA.get_current_day()
         if (MoA.current_day != current_date):
+            MoA.log_data(f"APP DAY : New day!")
             socketio.emit('date', current_date)
             MoA.current_day = current_date
 
         """ SL TRAFFIC """
         # Checks if nearest departure has already past
         if (current_time > MoA.get_nearest_trip_time() or MoA.sl_new):
-            
-            # if new travel destination is set by user
-            if (MoA.sl_new):
-                data = "App Thread SL: new destination is set from user or __init__"
-                MoA.sl_new = False
-                # Log data
-                MoA.log_data(data)
 
             # if current time is greater than next departure
-            elif (current_time > MoA.get_nearest_trip_time()):
-                # Log data
-                MoA.log_data(f"App Thread SL: refreshed destination schedule, current_time({current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
+            if (current_time > MoA.get_nearest_trip_time()):
+                MoA.log_data(f"APP SL: refreshed destination schedule, current_time({current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
                 MoA.set_new_travel()
-                MoA.sl_new = False
-                MoA.log_data(f"App Thread SL: new time of nearest train departure={MoA.get_nearest_trip_time().strftime('%H:%M:%S')}")
-                print("Time passed")
-            # if somethings wrong??
-            else:
-                print("App Thread SL = something is wrong..")
 
+            MoA.sl_new = False
             travel = MoA.get_travel()
             socketio.emit('sl', travel)
 

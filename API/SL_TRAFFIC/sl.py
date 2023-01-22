@@ -29,10 +29,10 @@ class SL:
             data = json.loads(response.text)
             try:
                 return data["ResponseData"]
-            except KeyError as e:
-                with open("log/errors.txt", "a") as file:
+            except (TypeError, KeyError) as e:
+                with open("log/logged.txt", "a") as file:
                     dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
-                    error_data = f"[{dt}] - {e} : {data}\n"
+                    error_data = f"[{dt}] - [ERROR] {e} : {data}\n"
                     file.write(error_data)
 
     def get_station_id(self, stations:list, index:int) -> dict:
@@ -106,9 +106,8 @@ class SL:
 
     def set_trip(self) -> list:
         travel_url = f"https://api.sl.se/api2/TravelplannerV3_1/trip.json?key={SL_TRAVEL_KEY}"
+        # sets time +2 minutes so when refreshed - always next one
         dt = (datetime.now() + timedelta(minutes=2)).strftime("%H:%M")
-        # print(f"TIME NOW = {datetime.now()}")
-        # print(f"TIME (dt) = {dt}")
         parameters = {
             "originId" : self.from_station["SiteId"],
             "destId" : self.to_station["SiteId"],
@@ -116,12 +115,9 @@ class SL:
         }
         # get request with api url and search parameters
         response = requests.get(travel_url, params=parameters)
-        print(f"set_trip API response : [{response.status_code}]")
         self.travel_trips = []
         # error handling
         if (response.status_code == 200):
-            with open("SL.json", "w") as file:
-                file.write(response.text)
             data = json.loads(response.text)
             # loops through every departure
             try:
@@ -185,22 +181,21 @@ class SL:
                 return self.travel_trips
             
             except (TypeError, KeyError) as e:
-                with open("log/errors.txt", "a") as file:
+                with open("log/logged.txt", "a") as file:
                     dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
-                    error_data = f"[{dt}] - {e} : {data}\n"
+                    error_data = f"[{dt}] - [ERROR] {e} : {data}\n"
                     file.write(error_data)                
                 return self.travel_trips
         
         else:
-            with open("log/errors.txt", "a") as file:
+            with open("log/logged.txt", "a") as file:
                 dt = datetime.now().strftime("%m-%d-%y %H:%M:%S")
-                error_data = f"[{dt}] - set_trip API response : [{response.status_code}]\n"
+                error_data = f"[{dt}] - [ERROR] SL : [{response.status_code}] Could not set trip with https://api.sl.se/api2/TravelplannerV3_1\n"
                 file.write(error_data)
             return self.travel_trips
 
-    def get_trip(self):
+    def get_trip(self) -> list:
         return self.travel_trips
-
 
 if __name__ == "__main__":
     sl = SL()  

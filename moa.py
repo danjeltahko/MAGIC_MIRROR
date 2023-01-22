@@ -13,6 +13,7 @@ class MOA:
         # Time & Date init
         self.current_time = "00:00:00"
         self.current_day = "Sön 20 Apr"
+        self.minute_time = "00:00"
 
         # SL init
         self.sl = SL()
@@ -30,7 +31,6 @@ class MOA:
         self.weather_refresh = False
         self.__WEATHER__(self.weather_location)
 
-
         # ToDo init
         self.todo = ToDo()
         self.todo_list = {"name": None}
@@ -46,14 +46,11 @@ class MOA:
         self.fitbit_refreshed = False
         self.fitbit_expires = None
 
-
-
         # self.news = Aftonbladet()
         # self.hue = Hue()
 
         # General init
         self.connected = 0
-        self.minute_time = "00:00"
 
 
     """ ### Time & Date ### """
@@ -92,7 +89,7 @@ class MOA:
         from_stations = self.sl.get_every_station(travel_from)
         # sets travel station, index 0 will always be the search /most similar
         self.sl.from_station = from_stations[0]
-        self.log_data(f"MOA SL new 'travel_from' is set: {self.sl.from_station['Name']}")
+        self.log_data(f"MOA SL : new 'travel_from' is set to {self.sl.from_station['Name']}")
 
     def set_new_tooo_station(self, travel_tooo:str) -> None:
         """ Gets and sets data of travel_tooo station """
@@ -104,10 +101,11 @@ class MOA:
         to_stations = self.sl.get_every_station(travel_tooo)
         # sets travel station, index 0 will always be the search /most similar
         self.sl.to_station = to_stations[0]
-        self.log_data(f"MOA SL new 'travel_to' is set: {self.sl.to_station['Name']}")
+        self.log_data(f"MOA SL : new 'travel_to' is set to {self.sl.to_station['Name']}")
 
     def set_new_travel(self) -> None:
         """ Creates travel dictionary list with travel data """
+        self.log_data(f"MOA SL : Trying to create new travel data from API")
         # sets trip to destination with next 5 departures
         self.sl_travel = self.sl.set_trip()
         if (len(self.sl_travel) > 0):
@@ -159,7 +157,6 @@ class MOA:
 
     def get_list(self) -> dict:
         """ returns dictionary with task from todo list """
-        self.log_data(f"MOA TODO : Trying to get tasks from {self.todo_list['name']} list from Microsoft API")
         self.todo_list = self.todo.return_tasks(self.todo_list["name"])
         if (self.todo_list["name"] != "ERROR"):
             self.log_data(f"MOA TODO : Successfully received tasks from {self.todo_list['name']} list")
