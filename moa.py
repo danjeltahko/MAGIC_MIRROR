@@ -1,5 +1,8 @@
 from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit, ToDo
-from datetime import datetime
+from DATABASE.aws import AWS
+from datetime import datetime, timedelta
+import pandas as pd
+import requests, json
 
 __version__ = 1.0
 __author__ = 'https://github.com/DanjelTahko'
@@ -46,11 +49,36 @@ class MOA:
         self.fitbit_refreshed = False
         self.fitbit_expires = None
 
+        # SOIL SENSOR
+        self.aws_db = AWS()
+        self.aws_db_data = None
+        self.last_waterplant = None
+        self.aws_refreshed = False
+        self.set_AWS()
+        #The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all(). ?????
+
+        # Philips HUE
+        self.hue = Hue()
+
         # self.news = Aftonbladet()
-        # self.hue = Hue()
 
         # General init
         self.connected = 0
+
+    def HUE_connect(self):
+        connecting = self.hue.connect()
+        if (connecting):
+            print("CONNECTED")
+        else:
+            print("FAILED TO CONNECT")
+
+    def HUE_OFF(self):
+        self.hue.turn_lights_off()
+    
+    def HUE_ON(self):
+        self.hue.turn_lights_on()
+
+
 
 
     """ ### Time & Date ### """
@@ -110,9 +138,9 @@ class MOA:
         self.sl_travel = self.sl.set_trip()
         if (len(self.sl_travel) > 0):
             self.sl_new = True
-            self.log_data("MOA SL: Successfully created new Travel with new train departures")
+            self.log_data("MOA SL : Successfully created new Travel with new train departures")
         else:
-            self.log_data("MOA SL: Failed to created new Travel with new trains and departures. (See ERROR for more info)")
+            self.log_data("MOA SL : Failed to created new Travel with new trains and departures. (See ERROR for more info)")
 
     def get_nearest_trip_time(self) -> datetime:
         """ Returns first departure from train/trip in list: 01-23-2022 22:50:30 """
@@ -271,6 +299,35 @@ class MOA:
         return datetime.strptime(nearest_time, "%m-%d-%y %H:%M:%S")
 
 
+    """ AWS Dynamo DB """
+    def set_AWS(self) -> None :
+        self.set_new_AWS_data()
+        self.set_last_AWS_data()
+
+    def set_new_AWS_data(self) -> None:
+        self.log_data(f"MOA WATERPLANT : Trying to get data from AWS Dynamo DB")
+        self.aws_db_data = self.aws_db.get_data_waterplant()
+        if (not self.aws_db_data.empty):
+            self.log_data(f"MOA WATERPLANT : Successfully received data from database")
+        else:
+            self.log_data(f"MOA WATERPLANT : Failed to received data from database")
+
+    def get_AWS_data(self) -> pd.DataFrame:
+        return self.aws_db_data
+
+    def set_last_AWS_data(self) -> None:
+        self.last_waterplant = {"date": self.aws_db_data.iloc[-1]["Datetime"], "moist": int(self.aws_db_data.iloc[-1]["Moisture"])}
+
+    def get_last_AWS_data(self) -> dict:
+        return self.last_waterplant
+    
+    def get_next_AWS_date(self):
+        time_stamp = self.get_last_AWS_data()
+        next_time = time_stamp["date"]
+        next_time = (next_time + timedelta(minutes=31))
+        return next_time
+
+
     """ LOG DATA """
     def log_data(self, data:str) -> None:
         """ logs everything to file! """
@@ -312,6 +369,7 @@ class MOA:
 
         except ValueError as e:
             return [e]
+        
 
 if __name__ == "__main__":
     moa = MOA()

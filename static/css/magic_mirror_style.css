@@ -235,6 +235,22 @@ body {
     width: 5vw;
 }
 
+/* WATERPLANT */
+.container__sensor {
+    display: flex;
+    flex-direction: row;
+    border: solid white 1px;
+    border-radius: 25px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3vw;
+    margin: 0;
+    margin-bottom: 1.5vw;
+}
+.sensor__text {
+    margin: 0.2vw;
+}
+
 
 
 .header__breaker {

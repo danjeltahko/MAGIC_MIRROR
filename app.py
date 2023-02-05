@@ -15,7 +15,7 @@ __author__ = 'https://github.com/DanjelTahko'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 socketio = SocketIO(app)
 thread = Thread()
 
@@ -37,6 +37,35 @@ def restart():
     subprocess.run(["flask", "run", "-host=0.0.0.0"])
     print("Successfully restarted server and pulled from GIT")
     return redirect("/user/")
+
+@app.route("/lights/", methods=['POST', 'GET'])
+def adjust_lights():
+    """ inside user todo, change list for mirror & user interface """
+
+    if (request.method == 'POST'):
+        
+        if ('connect' in request.form):
+            # MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'TODO'}")
+            # MoA.todo_list["name"] = "TODO"
+            MoA.HUE_connect()
+            return render_template("lights.html")
+
+        elif ('OFF' in request.form):
+            # MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'Inköpslista'}")
+            MoA.HUE_OFF()
+            return render_template("lights.html")
+
+        elif ('ON' in request.form):
+            # MoA.log_data(f"APP /todo-list/change-list/ : User changed Microsoft TODO list -> {'Handla'}")
+            # MoA.todo_list["name"] = "Handla"
+            MoA.HUE_ON()
+            return render_template("lights.html")
+        
+        else:
+            return render_template('lights.html')
+    else:
+        return render_template('lights.html')
+
 
 @app.route('/traffic/', methods=['POST', 'GET'])
 def adjust_traffic():
@@ -240,7 +269,7 @@ def moa_thread():
 
             # if current time is greater than next departure
             if (current_time > MoA.get_nearest_trip_time()):
-                MoA.log_data(f"APP SL: refreshed destination schedule, current_time({current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
+                MoA.log_data(f"APP SL : refreshed destination schedule, current_time({current_time.strftime('%H:%M:%S')}) - train_time({MoA.get_nearest_trip_time().strftime('%H:%M:%S')})")
                 MoA.set_new_travel()
 
             MoA.sl_new = False
@@ -295,8 +324,20 @@ def moa_thread():
                     MoA.log_data(f"APP WEATHER : Updated Mirror with the new weather forecast data")
             
             MoA.weather_refresh = False
+
+        """ WATERPLANT """
+        if (current_time > MoA.get_next_AWS_date()):
+
+            MoA.set_AWS()
+            print(f"{type(MoA.last_waterplant['moist'])} = {MoA.last_waterplant['moist']}")
+            socketio.emit('waterplant', MoA.last_waterplant["moist"])
+            MoA.log_data(f"APP WATERPLANT : Updated Mirror with the new avocado moisture")
+
         
 
 if __name__ == '__main__':
-    MoA = MOA()
-    socketio.run(app, host='0.0.0.0', port=1312)
+    try:
+        MoA = MOA()
+        socketio.run(app, host='0.0.0.0', port=1312)
+    except Exception as e:
+        print(e)

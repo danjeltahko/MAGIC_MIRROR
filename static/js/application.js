@@ -101,5 +101,13 @@ $(document).ready(function(){
             <div class="row_break_forecast"></div>`).join('')}
         </div>`;
     })
+
+    socket.on('waterplant', function(moist) {
+        document.querySelector('.container__sensor').innerHTML =
+        `
+        <h1 class="sensor__text">🥑</h1>
+        <h4 class="sensor__text"> ${moist} %</h4>
+        `;
+    })
     
 });

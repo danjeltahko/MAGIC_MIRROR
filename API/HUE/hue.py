@@ -8,30 +8,23 @@ class Hue:
 
     def __init__(self) -> None:
 
-        self.light_1 = "Hue white lamp 1"
-        self.light_2 = "Hue white lamp 2"
-        self.light_3 = "Hue white lamp 3"
-        self.light_4 = "Hue color lamp 1"
-        self.light_5 = "Hue filament bulb 1"
+        self.all_lights = ["Hue white lamp 1", "Hue white lamp 2",
+                           "Hue white lamp 3", "Hue color lamp 1",
+                           "Hue filament bulb 1", "Hue filament bulb 2",
+                           "Hue color lamp 2", "Hue color lamp 3"]
 
-        self.kitchen = [self.light_1, self.light_2]
-        self.bedroom = [self.light_3]
-        self.livingroom = [self.light_4, self.light_5]
+        self.bridge = Bridge(ip=HUE_BRIDGE)
 
-        self.all_lights = [self.light_1, self.light_2, self.light_3,
-                            self.light_4, self.light_5]
+    def connect(self):
+        try:
+            self.bridge.connect()
+            return True
+        except Exception as e:
+            print(e)            
+            return False
 
-        self.bridge = Bridge(HUE_BRIDGE)
-        self.bridge.connect()
+    def turn_lights_off(self):
+        self.bridge.set_light(self.all_lights, 'on', False)
 
-    def print_all_lights(self):
-
-        lights = self.bridge.lights
-        for l in lights:
-            print(l.name)
-
-    def turn_off_all(self):
-        self.bridge.set_light(self.all_lights, 'off')
-
-    def turn_off_all(self):
-        self.bridge.set_light(self.all_lights, 'on')
+    def turn_lights_on(self):
+        self.bridge.set_light(self.all_lights, 'on', True)
