@@ -222,6 +222,11 @@ def get_fitbit_token():
 
     return redirect("/user/")
 
+@app.route("/log/")
+def show_log():
+    # render logged data 
+    return render_template("log.html", log_file=MoA.get_logged_data())
+
 # Event Decoration 
 @socketio.on('connect')
 def connect():
