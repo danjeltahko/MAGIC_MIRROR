@@ -1,4 +1,5 @@
-from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit, ToDo
+from API import (Aftonbladet, AlbumGenerator, CoinMarketCap,
+                 Fitbit, Hue, SL, Telegram, ToDo, Trakt, Weather)
 from DATABASE.aws import AWS
 from datetime import datetime, timedelta
 import pandas as pd
@@ -59,6 +60,9 @@ class MOA:
 
         # Philips HUE
         self.hue = Hue()
+
+        # Telegram
+        self.telegram = Telegram()
 
         # self.news = Aftonbladet()
 
@@ -140,7 +144,9 @@ class MOA:
             self.sl_new = True
             self.log_data("MOA SL : Successfully created new Travel with new train departures")
         else:
-            self.log_data("MOA SL : Failed to created new Travel with new trains and departures. (See ERROR for more info)")
+            error_msg = "MOA SL : Failed to created new Travel with new trains and departures. (See ERROR for more info)"
+            self.log_data(error_msg)
+            self.notify(error_msg)
 
     def get_nearest_trip_time(self) -> datetime:
         """ Returns first departure from train/trip in list: 01-23-2022 22:50:30 """
@@ -169,7 +175,9 @@ class MOA:
             self.todo_expires = self.todo.expires_in
             self.todo_active = True
         else:
-            self.log_data("[ERROR] MOA TODO : Failed to received access token")
+            error_msg = "[ERROR] MOA TODO : Failed to received access token"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.todo_active = False
 
     def todo_refresh_auth_token(self) -> None:
@@ -180,7 +188,9 @@ class MOA:
             self.log_data("MOA TODO : Successfully refreshed access token")
             self.todo_expires = self.todo.expires_in
         else:
-            self.log_data("[ERROR] MOA TODO : Failed to refreshed access token")
+            error_msg = "[ERROR] MOA TODO : Failed to refreshed access token"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.fitbit_active = False
 
     def get_list(self) -> dict:
@@ -191,7 +201,9 @@ class MOA:
             if (not self.todo_active):
                 self.todo_active = True
         else:
-            self.log_data(f"[ERROR] MOA TODO : Failed to received tasks from {self.todo_list['name']} list")
+            error_msg = f"[ERROR] MOA TODO : Failed to received tasks from {self.todo_list['name']} list"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.todo_active = False
         
         return self.todo_list
@@ -205,7 +217,9 @@ class MOA:
             if (not self.todo_active):
                 self.todo_active = True
         else:
-            self.log_data(f"[ERROR] MOA TODO : Failed to add '{task_input}' task to {self.todo_list['name']} list")
+            error_msg = f"[ERROR] MOA TODO : Failed to add '{task_input}' task to {self.todo_list['name']} list"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.todo_active = False
 
 
@@ -224,7 +238,9 @@ class MOA:
             self.fitbit_expires = self.fitbit.expires_in
             self.fitbit_active = True
         else:
-            self.log_data("[ERROR] MOA FITBIT : Failed to received access token")
+            error_msg = "[ERROR] MOA FITBIT : Failed to received access token"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.fitbit_active = False
 
     def fitbit_refresh_auth_token(self) -> None:
@@ -235,7 +251,9 @@ class MOA:
             self.log_data("MOA FITBIT : Successfully refreshed access token")
             self.todo_expires = self.todo.expires_in
         else:
-            self.log_data("[ERROR] MOA FITBIT : Failed to refreshed access token")
+            error_msg = "[ERROR] MOA FITBIT : Failed to refreshed access token"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.fitbit_active = False
 
     def set_sleep_summary(self) -> dict:
@@ -246,7 +264,9 @@ class MOA:
             if (not self.fitbit_active):
                 self.fitbit_active = True
         else:
-            self.log_data("[ERROR] MOA FITBIT : Failed to received new Sleep Data from API")
+            error_msg = "[ERROR] MOA FITBIT : Failed to received new Sleep Data from API"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             self.fitbit_active = False
         
         return self.fitbit_list
@@ -266,7 +286,9 @@ class MOA:
         if (success):
             self.log_data(f"MOA WEATHER : Successfully set weather to {city}")
         else:
-            self.log_data(f"[ERROR] MOA WEATHER : Successfully set weather to {city}")
+            error_msg = f"[ERROR] MOA WEATHER : Failed to set weather to {city}"
+            self.log_data(error_msg)
+            self.notify(error_msg)
 
     def set_current_weather(self) -> dict:
         """ gets new current weather data"""
@@ -277,7 +299,9 @@ class MOA:
             self.log_data(f"MOA WEATHER : Successfully received new weather data")
             return self.weather_current
         else:
-            self.log_data("[ERROR] MOA WEATHER : Failed to receive current_weather data")
+            error_msg = "[ERROR] MOA WEATHER : Failed to receive current_weather data"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             return {"temperature": "ERROR"}
 
     def set_forecast_weather(self) -> list:
@@ -290,7 +314,9 @@ class MOA:
             self.log_data(f"MOA WEATHER : Successfully received new weather forecast data")
             return self.weather_forecast
         else:
-            self.log_data(f"[ERROR] MOA WEATHER : Failed to received new weather forecast data")
+            error_msg = f"[ERROR] MOA WEATHER : Failed to received new weather forecast data"
+            self.log_data(error_msg)
+            self.notify(error_msg)
             return [{"temperature": "ERROR"}]
 
     def get_nearest_weather_time(self) -> datetime:
@@ -310,7 +336,9 @@ class MOA:
         if (not self.aws_db_data.empty):
             self.log_data(f"MOA WATERPLANT : Successfully received data from database")
         else:
-            self.log_data(f"MOA WATERPLANT : Failed to received data from database")
+            error_msg = f"MOA WATERPLANT : Failed to received data from database"
+            self.log_data(error_msg)
+            self.notify(error_msg)
 
     def get_AWS_data(self) -> pd.DataFrame:
         return self.aws_db_data
@@ -326,6 +354,14 @@ class MOA:
         next_time = time_stamp["date"]
         next_time = (next_time + timedelta(minutes=31))
         return next_time
+    
+    def notify(self, msg: str) -> None:
+        """ send notification to telegram app on my phone """
+        response = self.telegram.send_message(msg)
+        if response:
+            self.log_data("MOA TELEGRAM : Successfully sent notification to phone with error message")
+        else:
+            self.log_data("MOA TELEGRAM : Failed to send notification to phone with error message")
 
 
     """ LOG DATA """

@@ -6,3 +6,5 @@ from API.TRAKT.trakt import Trakt
 from API.WEATHER.weather import Weather
 from API.FITBIT.fitbit import Fitbit
 from API.TODO.todo import ToDo
+from API.ALBUMGEN.albumgen import AlbumGenerator
+from API.TELEGRAM.telegram import Telegram

@@ -1,4 +1,4 @@
-from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit
+from API import Aftonbladet, CoinMarketCap, Hue, SL, Trakt, Weather, Fitbit, AlbumGenerator, Telegram
 
 _aftonbladet = Aftonbladet()
 _cmc = CoinMarketCap()
@@ -7,8 +7,14 @@ _sl = SL()
 _trakt = Trakt()
 _weather = Weather() 
 _fitbit = Fitbit()
+_gen = AlbumGenerator()
 
 if __name__ == '__main__':
+
+    #_gen.randomGenerator()
+    #_gen.getTodaysAlbum()
+    tg = Telegram()
+    tg.send_message("test ERROR")
 
     """ Aftonbladet testing"""
     #_aftonbladet.get_data_first_article()
@@ -21,12 +27,12 @@ if __name__ == '__main__':
     """ SL testing"""        
 
     # returns a dictionary list with all stations similar to search
-    from_stations = _sl.get_every_station("Vällingby")
-    to_stations = _sl.get_every_station("Sundbyberg")
-    print(to_stations)
-    # sets travel station, index 0 will always be the search /most similar
-    _sl.from_station = from_stations[0]
-    _sl.to_station = to_stations[0]
+    # from_stations = _sl.get_every_station("Vällingby")
+    # to_stations = _sl.get_every_station("Sundbyberg")
+    # print(to_stations)
+    # # sets travel station, index 0 will always be the search /most similar
+    # _sl.from_station = from_stations[0]
+    # _sl.to_station = to_stations[0]
 
     # from_id = _sl.from_station_id
     # print(from_id)

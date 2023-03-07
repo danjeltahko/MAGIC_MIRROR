@@ -1,4 +1,4 @@
-from api_keys import *
+from API.api_keys import *
 import requests
 
 class Telegram:
