@@ -18,6 +18,7 @@ class SL:
         self.destin_t = None
         self.transports = []
         self.legs = []
+        self.msg = []
         self.total_t = None
 
     def get_every_station(self, station:str) -> list[dict]:
@@ -55,6 +56,7 @@ class SL:
         self.destin_t = None
         self.legs = []
         self.transports = []
+        self.msg = []
         self.total_t = None
 
     def convert_datetime(self, date:str, time:str) -> datetime:
@@ -118,6 +120,9 @@ class SL:
         self.travel_trips = []
         # error handling
         if (response.status_code == 200):
+            with open("sl_request.json", "w") as file:
+                file.write(response.text)
+
             data = json.loads(response.text)
             # loops through every departure
             try:
@@ -133,7 +138,7 @@ class SL:
                         transport = trip['name']
                         
                         # if first transport in trip, set origin as origin
-                        if (trip == trip_data["LegList"]["Leg"][0]):
+                        if (trip == trip_data['LegList']['Leg'][0]):
                             self.origin = origin_name
                             self.origin_t = self.convert_datetime(trip['Origin']['date'], trip['Origin']['time'])
                         
@@ -150,6 +155,22 @@ class SL:
                         # pass if transport is walk && its not first or last 
                         if (trip["type"] == "WALK"):
                             continue
+
+                        if ("Messages" in trip):
+                            self.msg.append(trip['Messages']['Message'][0]['text'])
+                            """{
+                                "id": "119436585",
+                                "act": true,
+                                "head": "Information",
+                                "text": "Inställd på grund av personalbrist.",
+                                "category": "0",
+                                "priority": 30,
+                                "products": 65535,
+                                "sTime": "07:45:00",
+                                "sDate": "2023-03-08",
+                                "eTime": "09:14:00",
+                                "eDate": "2023-03-08"
+                            }"""
 
                         # if transport changes necessary for trip, append stops in legs list
                         else:
@@ -174,7 +195,8 @@ class SL:
                                 "destin_time": destin_time_str,
                                 "total_time": self.total_t,
                                 "changes": self.legs,
-                                "transports": self.transports}
+                                "transports": self.transports,
+                                "messages": self.msg}
                     self.travel_trips.append(new_travel)
 
                 # print(f"travel_trips array returned\nFirst departure: {self.travel_trips[0]['origin_time']}")
